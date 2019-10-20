@@ -1,11 +1,11 @@
-package com.fiuni.sd.issuetracker.beans;
+package com.fiuni.sd.issuetracker.domain;
 
 import java.util.ArrayList;
 import java.util.Date;
 
 import javax.persistence.Entity;
 
-public class Grupos extends BaseBean {
+public class Grupos extends BaseDomain {
 	private String nombre;
 	private Date creacion;
 	private ArrayList<User> users = new ArrayList<User>();

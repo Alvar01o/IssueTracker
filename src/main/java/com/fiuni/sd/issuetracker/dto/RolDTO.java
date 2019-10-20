@@ -3,6 +3,15 @@ package com.fiuni.sd.issuetracker.dto;
 public class RolDTO  extends BaseDTO {
 	private int valor ;
 	private String nombre;
+	private String descripcion;
+	
+	public void setDescripcion(String n) {
+		this.descripcion= n;
+	}
+	
+	public String getDescripcion() {
+		return this.descripcion;
+	}
 	
 	public void setNombre(String n) {
 		this.nombre= n;

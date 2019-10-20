@@ -2,7 +2,7 @@ package com.fiuni.sd.issuetracker.dto;
 
 import java.util.ArrayList;
 
-import com.fiuni.sd.issuetracker.beans.Tableros;
+import com.fiuni.sd.issuetracker.domain.Tableros;
 
 public class ProyectosDTO  extends BaseDTO{
 	private String nombre;

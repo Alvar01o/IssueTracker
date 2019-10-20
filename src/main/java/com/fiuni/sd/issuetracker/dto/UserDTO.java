@@ -1,7 +1,12 @@
 package com.fiuni.sd.issuetracker.dto;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import com.fiuni.sd.issuetracker.domain.Rol;
+
 import javax.xml.bind.annotation.XmlElement;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 
 @XmlRootElement(name = "user")
@@ -10,9 +15,24 @@ public class UserDTO  extends BaseDTO{
 	private String apellido;
 	private String email;
 	private Date creacion;
+	private Set<RolDTO> roles;
+	private String pass;
+	@XmlElement
+	public Set<RolDTO> getRoles() {
+		return roles;
+	}
+
+	public void setPass(String pass) {
+		this.pass = pass;
+	}
+	@XmlElement
+	public String getPass() {
+		return this.pass;
+	}
 	
-	private RolDTO rol;
-	
+	public void setRoles(Set<RolDTO> roles) {
+		this.roles = roles;
+	}
 	public void setNombre(String n) {
 		this.nombre= n;
 	}
@@ -44,12 +64,5 @@ public class UserDTO  extends BaseDTO{
 	public void setCreacion(Date c) {
 		this.creacion = c;
 	}
-	@XmlElement
-	public RolDTO getRol () {
-		return this.rol;
-	}
-	
-	public void setRol(RolDTO rol) {
-		this.rol = rol;
-	}
+
 }

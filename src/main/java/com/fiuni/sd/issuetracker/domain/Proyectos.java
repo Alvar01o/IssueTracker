@@ -1,10 +1,10 @@
-package com.fiuni.sd.issuetracker.beans;
+package com.fiuni.sd.issuetracker.domain;
 
 import java.util.ArrayList;
 
 import javax.persistence.Entity;
 
-public class Proyectos extends BaseBean{
+public class Proyectos extends BaseDomain{
 	private String nombre;
 	private Grupos grupo;
 	

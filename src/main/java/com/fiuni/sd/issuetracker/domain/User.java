@@ -1,4 +1,4 @@
-package com.fiuni.sd.issuetracker.beans;
+package com.fiuni.sd.issuetracker.domain;
 
 
 import java.util.Date;
@@ -19,7 +19,7 @@ import javax.persistence.ManyToMany;
 import org.hibernate.annotations.GenericGenerator;
 
 @Entity
-public class User extends BaseBean{
+public class User extends BaseDomain{
 
 	private static final long serialVersionUID = 1L;
 

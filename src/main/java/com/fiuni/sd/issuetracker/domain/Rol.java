@@ -1,4 +1,4 @@
-package com.fiuni.sd.issuetracker.beans;
+package com.fiuni.sd.issuetracker.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,7 +11,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 
 @Entity
-public class Rol extends BaseBean {
+public class Rol extends BaseDomain {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -23,7 +23,19 @@ public class Rol extends BaseBean {
 	private String name;
 
 	@Column
+	private int valor;
+	
+	@Column
 	private String descripcion;
+	
+	
+	public Integer getValor() {
+		return valor;
+	}
+
+	public void setValor(Integer valor) {
+		this.valor = valor;
+	}
 
 	public Integer getId() {
 		return id;

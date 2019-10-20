@@ -1,4 +1,4 @@
-package com.fiuni.sd.issuetracker.beans;
+package com.fiuni.sd.issuetracker.domain;
 
 import java.util.Date;
 
@@ -10,7 +10,7 @@ import javax.persistence.Id;
 
 import org.hibernate.annotations.GenericGenerator;
 @Entity
-public class Tareas extends BaseBean{
+public class Tareas extends BaseDomain{
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
 	@GenericGenerator(name = "native", strategy = "native")

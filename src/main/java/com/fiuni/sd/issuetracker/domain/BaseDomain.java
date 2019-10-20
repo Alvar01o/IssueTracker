@@ -1,8 +1,8 @@
-package com.fiuni.sd.issuetracker.beans;
+package com.fiuni.sd.issuetracker.domain;
 
 import java.io.Serializable;
 
-public abstract class BaseBean implements Serializable  {
+public abstract class BaseDomain implements Serializable  {
 
 	private static final long serialVersionUID = 1L;
 

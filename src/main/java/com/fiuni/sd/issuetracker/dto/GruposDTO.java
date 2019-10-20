@@ -3,7 +3,7 @@ package com.fiuni.sd.issuetracker.dto;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.fiuni.sd.issuetracker.beans.User;
+import com.fiuni.sd.issuetracker.domain.User;
 
 public class GruposDTO extends BaseDTO {
 	private String nombre;

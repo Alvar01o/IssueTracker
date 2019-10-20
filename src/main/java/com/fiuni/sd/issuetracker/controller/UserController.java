@@ -33,8 +33,7 @@ public class UserController {
 
 	@GetMapping(path = "/page/{page_num}")
 	public UserResultDTO getClients(@PathVariable(value = "page_num")Integer pageNum) {
-		return null;
-		//		return userService.getAll(PageRequest.of(pageNum, 30));
+		return userService.getAll(PageRequest.of((pageNum-1), 30));
 	}
 	
 	@PostMapping()

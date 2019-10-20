@@ -1,4 +1,4 @@
-package com.fiuni.sd.issuetracker.beans;
+package com.fiuni.sd.issuetracker.domain;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -17,7 +17,7 @@ import java.util.Set;
 
 
 @Entity
-public class Tableros extends BaseBean {
+public class Tableros extends BaseDomain {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
