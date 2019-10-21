@@ -1,17 +1,16 @@
 package com.fiuni.sd.issuetracker.dto;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 
-public class UserResultDTO extends BaseResultDTO<UserDTO>{
+public class TareasResultDTO extends BaseResultDTO<TareasDTO>{
 
-	public List<UserDTO> getUsers() {
+	public List<TareasDTO> getTareas() {
 		return getList();
 	}
 
-	public void setUsers(List<UserDTO> dtos) {
+	public void setTareas(List<TareasDTO> dtos) {
 		super.setList(dtos);
 	}
 
@@ -20,5 +19,4 @@ public class UserResultDTO extends BaseResultDTO<UserDTO>{
 	}
 
 	private static final long serialVersionUID = 1L;
-
 }

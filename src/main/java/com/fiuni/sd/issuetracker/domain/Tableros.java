@@ -12,6 +12,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 
 import java.util.Set;
 
@@ -30,7 +31,12 @@ public class Tableros extends BaseDomain {
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "tablero_tareas", joinColumns = @JoinColumn(name = "tablero_id"), inverseJoinColumns = @JoinColumn(name = "tarea_id"))
 	private Set<Tareas> tareas;
-	
+
+    @ManyToOne
+    @JoinColumn(name = "fk_proyectos", nullable = false, updatable = false)
+    private Proyectos proyecto;
+    
+
 	public void setNombre(String n) {
 		this.nombre= n;
 	}

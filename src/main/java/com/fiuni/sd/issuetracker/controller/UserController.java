@@ -32,13 +32,19 @@ public class UserController {
 	}
 
 	@GetMapping(path = "/page/{page_num}")
-	public UserResultDTO getClients(@PathVariable(value = "page_num")Integer pageNum) {
+	public UserResultDTO getUsers(@PathVariable(value = "page_num")Integer pageNum) {
 		return userService.getAll(PageRequest.of((pageNum-1), 30));
+	}
+
+	@GetMapping(path = "/find/{search}/{page_num}")
+	public UserResultDTO findUser(@PathVariable(value = "search") String search , @PathVariable(value = "page_num")Integer pageNum) {
+		return userService.findALL(PageRequest.of((pageNum-1), 30) , search); 
 	}
 	
 	@PostMapping()
-	public UserDTO save(@Valid @RequestBody UserDTO client) {
-		return userService.save(client);
+	public UserDTO save(@Valid @RequestBody UserDTO user) {
+		System.out.println(" String + >> >>>>> " + user.toString());
+		return userService.save(user);
 	}
 	
 }

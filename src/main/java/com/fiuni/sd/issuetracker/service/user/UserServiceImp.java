@@ -27,8 +27,10 @@ public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDT
 	
 	@Override
 	public UserDTO save(UserDTO dto) {
-		// TODO Auto-generated method stub
-		return null;
+		final User user = convertDtoToDomain(dto);
+		final User userD = userDao.save(user);
+		return convertDomainToDto(userD);
+
 	}
 
 	@Override
@@ -36,9 +38,17 @@ public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDT
 		return convertDomainToDto(userDao.findById(id.intValue()).get());
 	}
 
+	public UserResultDTO findALL(Pageable pageable ,String search) {
+		final List<UserDTO> users = new ArrayList<>();
+		Page<User> results=userDao.findByNombreIgnoreCaseOrApellidoIgnoreCaseOrEmailIgnoreCase(search, search, search, pageable);
+		results.forEach(us->users.add(convertDomainToDto(us)));
+		final UserResultDTO usersResult = new UserResultDTO();
+		usersResult.setUsers(users);
+		return usersResult;
+	}
 
+	
 	public UserResultDTO getAll(Pageable pageable) {
-
 		final List<UserDTO> users = new ArrayList<>();
 		Page<User> results=userDao.findAll(pageable);
 		results.forEach(us->users.add(convertDomainToDto(us)));
@@ -55,17 +65,20 @@ public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDT
 		dto.setEmail(domain.getEmail());
 		dto.setCreacion(domain.getCreacion());
 		dto.setNombre(domain.getNombre());
-		Set<RolDTO> roles = new HashSet<RolDTO>();
-		domain.getRoles().forEach((rol) -> {
-			RolDTO r = new RolDTO();
-			r.setId(rol.getId());
-			r.setNombre(rol.getName());
-			r.setDescripcion(rol.getDescription());
-			r.setValor(rol.getValor());
-			roles.add(r);
-		});
-		if(!roles.isEmpty()) {
-			dto.setRoles(roles); // set Result on this vblock			
+
+		if(domain.getRoles() != null) {
+			Set<RolDTO> roles = new HashSet<RolDTO>();
+	           domain.getRoles().forEach((rol) -> {
+	                   RolDTO r = new RolDTO();
+	                   r.setId(rol.getId());
+	                   r.setNombre(rol.getName());
+	                   r.setDescripcion(rol.getDescription());
+	                   r.setValor(rol.getValor());
+	                   roles.add(r);
+	           });
+	           if(!roles.isEmpty()) {
+	                   dto.setRoles(roles); // set Result on this vblock
+	           }
 		}
 		return dto;
 	}
@@ -77,7 +90,6 @@ public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDT
 		u.setApellido(dto.getApellido());
 		u.setCreacion(dto.getCreacion());
 		u.setEmail(dto.getEmail());
-		u.setPass(dto.getPass());
 		return u;
 	}
 

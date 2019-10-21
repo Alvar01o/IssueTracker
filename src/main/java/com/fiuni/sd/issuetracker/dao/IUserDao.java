@@ -9,8 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 
 
-
-@Repository
 public interface IUserDao extends CrudRepository<User, Integer>  {
 	public Page<User> findAll(Pageable pageable);
+	public Page<User> findByNombreIgnoreCaseOrApellidoIgnoreCaseOrEmailIgnoreCase(String search1, String search2, String search3, Pageable pageable);
+	
 }

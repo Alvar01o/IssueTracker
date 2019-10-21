@@ -14,7 +14,6 @@ public abstract class BaseDomain implements Serializable  {
 		_id = id;
 	}
 
-
 	private Integer _id;
 
 }
