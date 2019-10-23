@@ -41,9 +41,12 @@ public class UserController {
 		return userService.findALL(PageRequest.of((pageNum-1), 30) , search); 
 	}
 	
+	@PostMapping(path = "addroll/{user_id}/{proyecto_id}/{rol_id}")
+	public UserDTO addRoll(@PathVariable(value = "user_id")int user_id,@PathVariable(value = "proyecto_id")int proyecto_id, @PathVariable(value = "rol_id") int rol_id) {
+		return userService.addUserRol(user_id,proyecto_id, rol_id) ;
+	}
 	@PostMapping()
 	public UserDTO save(@Valid @RequestBody UserDTO user) {
-		System.out.println(" String + >> >>>>> " + user.toString());
 		return userService.save(user);
 	}
 	

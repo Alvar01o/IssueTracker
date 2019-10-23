@@ -5,6 +5,7 @@ import java.util.Set;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fiuni.sd.issuetracker.domain.UserRoles;
 
 
 
@@ -16,24 +17,41 @@ public class UserDTO  extends BaseDTO{
 	// Allows dd/MM/yyyy date to be passed into GET request in JSON
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private Date creacion;
-	private Set<RolDTO> roles;
-	private String pass;
 
+	private String pass;
+/*	private Set<RolDTO> roles;
+	public void addRol(RolDTO r) {
+		this.roles.add(r);
+	}
+	
 	public Set<RolDTO> getRoles() {
+	
 		return roles;
 	}
-
-	public void setPass(String pass) {
-		this.pass = pass;
+	public void setRoles(Set<RolDTO> roles) {
+		this.roles = roles;
+	}
+*/
+    private Set<UserRolDTO> user_roles;
+    public void addRol(UserRolDTO r) {
+		this.user_roles.add(r);
+	}
+	
+	public Set<UserRolDTO> getUserRoles() {
+		return user_roles;
 	}
 
+	public void setUserRoles(Set<UserRolDTO> roles) {
+		this.user_roles = roles;
+	}
+	public void setPass(String pass) {
+		this.pass = pass;
+	}		
 	public String getPass() {
 		return this.pass;
 	}
 	
-	public void setRoles(Set<RolDTO> roles) {
-		this.roles = roles;
-	}
+
 	public void setNombre(String n) {
 		this.nombre= n;
 	}
@@ -68,6 +86,6 @@ public class UserDTO  extends BaseDTO{
 	@Override
 	public String toString() {
 		return "User [   nombre=" + nombre + ", lastName=" + apellido + ", email=" + email
-				+ ", username=" + email + ", password=" + pass + ", roles=" + roles + "]";
+				+ ", username=" + email + ", password=" + pass + ", user_roles=" + user_roles + "]";
 	}
 }

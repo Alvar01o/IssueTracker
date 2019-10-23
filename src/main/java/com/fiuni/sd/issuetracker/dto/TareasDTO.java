@@ -5,13 +5,22 @@ import java.util.Date;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class TareasDTO  extends BaseDTO{
 	
 	private String nombre;
 	private String descripcion;
 	private int prioridad;
 	private String estado;
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	// Allows dd/MM/yyyy date to be passed into GET request in JSON
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private Date creacion;
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private Date limite;
 
 	public String getEstado() {

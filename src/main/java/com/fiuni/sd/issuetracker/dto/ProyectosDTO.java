@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 public class ProyectosDTO  extends BaseDTO{
 	private String nombre;
+	private String descripcion;
 	private GruposDTO grupo;
 	//tableros
 	public void setGrupo(GruposDTO g) {
@@ -25,5 +26,12 @@ public class ProyectosDTO  extends BaseDTO{
 
 	public String getNombre() {
 		return this.nombre;
+	}
+	public void setDescripcion(String n) {
+		this.descripcion = n;
+	}
+
+	public String getDescripcion() {
+		return this.descripcion;
 	}
 }

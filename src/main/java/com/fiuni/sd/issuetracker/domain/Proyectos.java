@@ -27,6 +27,8 @@ public class Proyectos extends BaseDomain{
 	private Integer id;
 	@Column
 	private String nombre;
+	@Column
+	private String descripcion;	
 	
     @JoinColumn(name = "grupo_id", nullable = false)
     @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -44,6 +46,13 @@ public class Proyectos extends BaseDomain{
 		return this.grupo;
 	}
 	
+	public void setDescripcion(String n) {
+		this.descripcion = n;
+	}
+	
+	public String getDescripcion() {
+		return this.descripcion;
+	}	
 	public void setNombre(String n) {
 		this.nombre = n;
 	}
@@ -52,11 +61,11 @@ public class Proyectos extends BaseDomain{
 		return this.nombre;
 	}
 
-	public Set<Tableros> getTareas() {
+	public Set<Tableros> getTableros() {
 		return tableros;
 	}
 
-	public void setTareas(Set<Tableros> tableros) {
+	public void setTableros(Set<Tableros> tableros) {
 		this.tableros = tableros;
 	}
 

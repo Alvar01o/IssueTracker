@@ -14,9 +14,11 @@ import javax.persistence.Table;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-
+import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.GenericGenerator;
+
+import com.fiuni.sd.issuetracker.dto.RolDTO;
 
 @Entity
 public class User extends BaseDomain{
@@ -39,11 +41,36 @@ public class User extends BaseDomain{
 	@Column
 	private String pass;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<UserRoles> user_roles;
 	
+    public void addRol(UserRoles r) {
+		this.user_roles.add(r);
+	}
+	
+	public Set<UserRoles> getUserRoles() {
+		return user_roles;
+	}
+
+	public void setRoles(Set<UserRoles> roles) {
+		this.user_roles = roles;
+	}
+    /*
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Rol> roles;
+     
+	public void addRol(Rol r) {
+		this.roles.add(r);
+	}
+	
+	public Set<Rol> getRoles() {
+		return roles;
+	}
 
+	public void setRoles(Set<Rol> roles) {
+		this.roles = roles;
+	}*/
 	public Integer getId() {
 		return id;
 	}
@@ -91,19 +118,12 @@ public class User extends BaseDomain{
 	public String getPass(String pass) {
 		return this.pass;
 	}
-	
-	public Set<Rol> getRoles() {
-		return roles;
-	}
 
-	public void setRoles(Set<Rol> roles) {
-		this.roles = roles;
-	}
 
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", firstName=" + nombre + ", lastName=" + apellido + ", email=" + email
-				+ ", username=" + email + ", password=" + pass + ", roles=" + roles + "]";
+				+ ", username=" + email + ", password=" + pass + ", user_roles=" + user_roles + "]";
 	}
 	
 }

@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 
-public class TableroResultDTO extends BaseResultDTO<TablerosDTO>{
+public class TablerosResultDTO extends BaseResultDTO<TablerosDTO>{
 
 	public List<TablerosDTO> getTareas() {
 		return getList();
