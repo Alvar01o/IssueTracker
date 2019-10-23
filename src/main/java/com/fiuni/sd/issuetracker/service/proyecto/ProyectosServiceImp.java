@@ -5,18 +5,18 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import com.fiuni.sd.issuetracker.dao.IGruposDao;
 import com.fiuni.sd.issuetracker.dao.IProyectosDao;
 import com.fiuni.sd.issuetracker.domain.Grupos;
 import com.fiuni.sd.issuetracker.domain.Proyectos;
-import com.fiuni.sd.issuetracker.domain.Tableros;
 import com.fiuni.sd.issuetracker.dto.GruposDTO;
 import com.fiuni.sd.issuetracker.dto.ProyectosDTO;
 import com.fiuni.sd.issuetracker.dto.ProyectosResultDTO;
-import com.fiuni.sd.issuetracker.dto.TablerosDTO;
-import com.fiuni.sd.issuetracker.dto.TablerosResultDTO;
 import com.fiuni.sd.issuetracker.service.base.BaseServiceImpl;
+
+@Service
 public class ProyectosServiceImp extends BaseServiceImpl<ProyectosDTO, Proyectos, ProyectosResultDTO> implements IProyectosService {
 	@Autowired
 	private IProyectosDao proyectosDao;
@@ -61,9 +61,9 @@ public class ProyectosServiceImp extends BaseServiceImpl<ProyectosDTO, Proyectos
 		dto.setNombre(bean.getNombre());
 		dto.setDescripcion(bean.getDescripcion());
 		GruposDTO g = new GruposDTO();
-		g.setCreacion(dto.getGrupo().getCreacion());
-		g.setId(dto.getGrupo().getId());
-		g.setNombre(dto.getGrupo().getNombre());
+		g.setCreacion(bean.getGrupo().getCreacion());
+		g.setId(bean.getGrupo().getId());
+		g.setNombre(bean.getGrupo().getNombre());
 		dto.setGrupo(g);
 		return dto;
 	}
@@ -73,12 +73,17 @@ public class ProyectosServiceImp extends BaseServiceImpl<ProyectosDTO, Proyectos
 		Proyectos P = new Proyectos();
 		P.setId(dto.getId());
 		P.setNombre(dto.getNombre());
+		P.setDescripcion(dto.getDescripcion());
 		GruposDTO g = dto.getGrupo();
-		Grupos g1 = new Grupos();
-		g1.setId(g.getId());
-		g1.setCreacion(g.getCreacion());
-		g1.setNombre(g.getNombre());
-		P.setGrupo(g1);
+		if(dto.getGrupo() != null) {
+			Grupos g1 = new Grupos();
+			g1.setId(g.getId());
+			g1.setCreacion(g.getCreacion());
+			g1.setNombre(g.getNombre());
+			P.setGrupo(g1);
+		} else {
+			System.out.println("no hay grupo");
+		}
 		//set tableros
 		return P;
 	}

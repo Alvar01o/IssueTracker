@@ -17,6 +17,9 @@ import javax.persistence.ManyToMany;
 import org.hibernate.annotations.GenericGenerator;
 @Entity
 public class Grupos extends BaseDomain {
+
+	private static final long serialVersionUID = 1L;
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
 	@GenericGenerator(name = "native", strategy = "native")

@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import com.fiuni.sd.issuetracker.dao.IGruposDao;
 import com.fiuni.sd.issuetracker.domain.Grupos;
@@ -14,6 +15,7 @@ import com.fiuni.sd.issuetracker.dto.GruposResultDTO;
 import com.fiuni.sd.issuetracker.dto.TablerosDTO;
 import com.fiuni.sd.issuetracker.dto.TablerosResultDTO;
 import com.fiuni.sd.issuetracker.service.base.BaseServiceImpl;
+@Service
 public class GrupoServiceImp extends BaseServiceImpl<GruposDTO, Grupos, GruposResultDTO> implements IGrupoService {
 	@Autowired
 	private IGruposDao gruposDao;
@@ -63,8 +65,11 @@ public class GrupoServiceImp extends BaseServiceImpl<GruposDTO, Grupos, GruposRe
 
 	@Override
 	protected Grupos convertDtoToDomain(GruposDTO dto) {
-		// TODO Auto-generated method stub
-		return null;
+		Grupos  g =new Grupos();
+		g.setCreacion(dto.getCreacion());
+		g.setId(dto.getId());
+		g.setNombre(dto.getNombre());
+		return g;
 	}
 
 }

@@ -5,12 +5,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import com.fiuni.sd.issuetracker.dao.ITareasDao;
 import com.fiuni.sd.issuetracker.domain.Tareas;
 import com.fiuni.sd.issuetracker.dto.TareasDTO;
 import com.fiuni.sd.issuetracker.dto.TareasResultDTO;
 import com.fiuni.sd.issuetracker.service.base.BaseServiceImpl;
+@Service
 public class TareasServiceImp extends BaseServiceImpl<TareasDTO, Tareas, TareasResultDTO> implements ITareasService {
 	@Autowired
 	private ITareasDao tareasDap;

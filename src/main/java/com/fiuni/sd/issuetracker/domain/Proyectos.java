@@ -30,14 +30,20 @@ public class Proyectos extends BaseDomain{
 	@Column
 	private String descripcion;	
 	
-    @JoinColumn(name = "grupo_id", nullable = false)
-    @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "grupo_id", nullable = true)
+    @ManyToOne(optional = true,fetch = FetchType.LAZY)
     private Grupos grupo;
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "proyecto_tableros", joinColumns = @JoinColumn(name = "proyecto_id"), inverseJoinColumns = @JoinColumn(name = "tablero_id"))
 	private Set<Tableros> tableros;
-	
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
 	public void setGrupo(Grupos g) {
 		this.grupo = g;
 	}
