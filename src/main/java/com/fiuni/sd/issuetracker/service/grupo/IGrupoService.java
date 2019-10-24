@@ -10,4 +10,5 @@ import com.fiuni.sd.issuetracker.service.base.IBaseService;
 @Service
 public interface IGrupoService extends IBaseService<GruposDTO, Grupos, GruposResultDTO>{
 	public GruposResultDTO findALL(Pageable pageable ,String search);
+	public GruposDTO addUserToGrupo(int grupo_id,int user_id);
 }

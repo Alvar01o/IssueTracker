@@ -1,6 +1,8 @@
 package com.fiuni.sd.issuetracker.service.grupo;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -8,18 +10,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.fiuni.sd.issuetracker.dao.IGruposDao;
+import com.fiuni.sd.issuetracker.dao.IUserDao;
 import com.fiuni.sd.issuetracker.domain.Grupos;
 import com.fiuni.sd.issuetracker.domain.Tableros;
+import com.fiuni.sd.issuetracker.domain.User;
 import com.fiuni.sd.issuetracker.dto.GruposDTO;
 import com.fiuni.sd.issuetracker.dto.GruposResultDTO;
-import com.fiuni.sd.issuetracker.dto.TablerosDTO;
-import com.fiuni.sd.issuetracker.dto.TablerosResultDTO;
+
+import com.fiuni.sd.issuetracker.dto.UserDTO;
+
 import com.fiuni.sd.issuetracker.service.base.BaseServiceImpl;
 @Service
 public class GrupoServiceImp extends BaseServiceImpl<GruposDTO, Grupos, GruposResultDTO> implements IGrupoService {
 	@Autowired
 	private IGruposDao gruposDao;
-	
+	@Autowired
+	private IUserDao userDao;
 	
 	@Override
 	public GruposDTO save(GruposDTO dto) {
@@ -54,12 +60,26 @@ public class GrupoServiceImp extends BaseServiceImpl<GruposDTO, Grupos, GruposRe
 	}
 
 	@Override
-	protected GruposDTO convertDomainToDto(Grupos bean) {
+	protected GruposDTO convertDomainToDto(Grupos domain) {
 		final GruposDTO dto = new GruposDTO();
-		dto.setCreacion(bean.getCreacion());
-		dto.setId(bean.getId());
-		dto.setNombre(bean.getNombre());
-		//set roles
+		dto.setCreacion(domain.getCreacion());
+		dto.setId(domain.getId());
+		dto.setNombre(domain.getNombre());
+		if(domain.getUsers() != null) {
+			Set<UserDTO> usuarios = new HashSet<UserDTO>();
+	           domain.getUsers().forEach((u) -> {
+	        	   UserDTO us = new UserDTO();
+	        	   us.setNombre(u.getNombre());
+	        	   us.setApellido(u.getApellido());
+	        	   us.setEmail(u.getEmail());
+	        	   us.setCreacion(u.getCreacion());
+	        	   us.setId(u.getId());
+	        	   usuarios.add(us);
+	           });
+	           if(!usuarios.isEmpty()) {
+	               dto.setUsers(usuarios); // set Result on this vblock
+	           }
+		}
 		return dto;
 	}
 
@@ -69,7 +89,29 @@ public class GrupoServiceImp extends BaseServiceImpl<GruposDTO, Grupos, GruposRe
 		g.setCreacion(dto.getCreacion());
 		g.setId(dto.getId());
 		g.setNombre(dto.getNombre());
+		if(dto.getUsers() != null) {
+			Set<User> usuarios = new HashSet<User>();
+			dto.getUsers().forEach((u) -> {
+				User us = new User();
+	        	   us.setNombre(u.getNombre());
+	        	   us.setApellido(u.getApellido());
+	        	   us.setEmail(u.getEmail());
+	        	   us.setCreacion(u.getCreacion());
+	        	   us.setId(u.getId());
+	        	   usuarios.add(us);
+	           });
+            g.setUsers(usuarios); // set Result on this vblock
+		}
 		return g;
+	}
+
+	@Override
+	public GruposDTO addUserToGrupo(int grupo_id, int user_id) {
+		User user = userDao.findById(user_id).get();
+		Grupos g = gruposDao.findById(grupo_id).get();
+		g.addUser(user);
+		gruposDao.save(g);
+		return convertDomainToDto(g);
 	}
 
 }

@@ -32,7 +32,10 @@ public class Tableros extends BaseDomain {
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "tablero_tareas", joinColumns = @JoinColumn(name = "tablero_id"), inverseJoinColumns = @JoinColumn(name = "tarea_id"))
 	private Set<Tareas> tareas;
-
+	
+    public void addTarea(Tareas r) {
+		this.tareas.add(r);
+	}
 
 	public Integer getId() {
 		return id;

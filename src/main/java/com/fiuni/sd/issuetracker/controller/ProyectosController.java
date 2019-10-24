@@ -51,7 +51,6 @@ public class ProyectosController {
 	public ProyectosDTO save(@Valid @RequestBody ProyectosDTO pro,@PathVariable(value = "grupo_id")Long grupo_id ) {
 		GruposDTO g = gruposService.getById(grupo_id);
 		pro.setGrupo(g);
-		System.out.println(pro.toString());
 		return proyectoService.save(pro);
 	}
 }

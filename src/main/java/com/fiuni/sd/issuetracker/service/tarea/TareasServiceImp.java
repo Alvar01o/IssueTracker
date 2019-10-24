@@ -7,7 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.fiuni.sd.issuetracker.dao.ITablerosDao;
 import com.fiuni.sd.issuetracker.dao.ITareasDao;
+import com.fiuni.sd.issuetracker.domain.Tableros;
 import com.fiuni.sd.issuetracker.domain.Tareas;
 import com.fiuni.sd.issuetracker.dto.TareasDTO;
 import com.fiuni.sd.issuetracker.dto.TareasResultDTO;
@@ -16,7 +18,8 @@ import com.fiuni.sd.issuetracker.service.base.BaseServiceImpl;
 public class TareasServiceImp extends BaseServiceImpl<TareasDTO, Tareas, TareasResultDTO> implements ITareasService {
 	@Autowired
 	private ITareasDao tareasDap;
-	
+	@Autowired
+	private ITablerosDao tablerosDap;
 	@Override
 	public TareasDTO save(TareasDTO dto) {
 		final Tareas t = convertDtoToDomain(dto);
@@ -73,6 +76,23 @@ public class TareasServiceImp extends BaseServiceImpl<TareasDTO, Tareas, TareasR
 		t.setLimite(dto.getLimite());
 		t.setPrioridad(dto.getPrioridad());
 		return t;
+	}
+
+	@Override
+	public TareasDTO addTareaATablero(TareasDTO t, Long tablero_id) {
+		Tableros tablero = tablerosDap.findById(tablero_id.intValue()).get();
+		Tareas ta = new Tareas();
+		ta.setCreacion(t.getCreacion());
+		ta.setDescripcion(t.getDescripcion());
+		ta.setEstado(t.getEstado());
+		ta.setPrioridad(t.getPrioridad());
+		ta.setLimite(t.getLimite());
+		ta.setNombre(t.getNombre());
+		ta.setId(t.getId());
+		Tareas tf = tareasDap.save(ta);
+		tablero.addTarea(ta);
+		tablerosDap.save(tablero);
+		return convertDomainToDto(tf);
 	}
 
 }

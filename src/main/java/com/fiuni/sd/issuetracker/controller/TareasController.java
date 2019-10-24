@@ -15,15 +15,15 @@ import com.fiuni.sd.issuetracker.dto.TablerosDTO;
 import com.fiuni.sd.issuetracker.dto.TablerosResultDTO;
 import com.fiuni.sd.issuetracker.dto.TareasDTO;
 import com.fiuni.sd.issuetracker.dto.TareasResultDTO;
+import com.fiuni.sd.issuetracker.service.tablero.ITableroService;
 import com.fiuni.sd.issuetracker.service.tarea.ITareasService;
 
 @RestController
-@RequestMapping("/tareas")
+@RequestMapping("/tarea")
 public class TareasController {
 	@Autowired
 	ITareasService tareasService;
 
-	
 	@GetMapping("/{id}")
 	public TareasDTO getById(@PathVariable Long id) {
 		System.out.println(id);
@@ -37,7 +37,7 @@ public class TareasController {
 	}
 
 	@GetMapping(path = "/find/{search}/{page_num}")
-	public TareasResultDTO findUser(@PathVariable(value = "search") String search , @PathVariable(value = "page_num")Integer pageNum) {
+	public TareasResultDTO findTarea(@PathVariable(value = "search") String search , @PathVariable(value = "page_num")Integer pageNum) {
 		return tareasService.findALL(PageRequest.of((pageNum-1), 30) , search); 
 	}
 /*	
@@ -45,8 +45,8 @@ public class TareasController {
 	public GruposDTO addRoll(@PathVariable(value = "user_id")int user_id,@PathVariable(value = "proyecto_id")int proyecto_id, @PathVariable(value = "rol_id") int rol_id) {
 		return grupoService.addUserRol(user_id,proyecto_id, rol_id) ;
 	}*/
-	@PostMapping("/{proyecto_id}")
-	public TareasDTO save(@Valid @RequestBody TareasDTO t, @PathVariable(value = "proyecto_id")Long proyecto_id) {
-		return tareasService.save(t);
+	@PostMapping("/addtareatablero/{tablero_id}")
+	public TareasDTO save(@Valid @RequestBody TareasDTO t, @PathVariable(value = "tablero_id")Long tablero_id) {
+		return tareasService.addTareaATablero(t, tablero_id) ;
 	}
 }

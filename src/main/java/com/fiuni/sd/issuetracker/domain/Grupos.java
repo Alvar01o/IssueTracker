@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,7 +14,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 @Entity
 public class Grupos extends BaseDomain {
@@ -26,7 +30,10 @@ public class Grupos extends BaseDomain {
 	private Integer id;
 	@Column
 	private String nombre;
+	@Basic(optional = false)
+	@CreationTimestamp
 	@Column
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date creacion;
 
 	@ManyToMany(fetch = FetchType.LAZY)
@@ -56,14 +63,15 @@ public class Grupos extends BaseDomain {
 	public void setCreacion(Date c) {
 		this.creacion = c;
 	}
-	public Set<User> getRoles() {
+	public void setUsers(Set<User> users) {
+		this.usuarios =users;
+	}
+	public Set<User> getUsers() {
 		return usuarios;
 	}
-
-	public void setRoles(Set<User> usuarios) {
-		this.usuarios = usuarios;
-	}
-
+	 public void addUser(User r) {
+			this.usuarios.add(r);
+		}
 	@Override
 	public String toString() {
 		return "Grupo [id=" + id + ", nombre=" + nombre + ", creacion=" + creacion + ", usuarios=" + usuarios+ "]";

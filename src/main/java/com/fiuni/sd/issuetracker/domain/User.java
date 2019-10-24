@@ -4,6 +4,7 @@ package com.fiuni.sd.issuetracker.domain;
 import java.util.Date;
 import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,11 +12,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fiuni.sd.issuetracker.dto.RolDTO;
@@ -36,8 +40,11 @@ public class User extends BaseDomain{
 	private String apellido;
 	@Column
 	private String email;
+	@Basic(optional = false)
+	@CreationTimestamp
 	@Column
-	private Date creacion;
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date creacion = new Date();
 	@Column
 	private String pass;
 
@@ -55,22 +62,7 @@ public class User extends BaseDomain{
 	public void setRoles(Set<UserRoles> roles) {
 		this.user_roles = roles;
 	}
-    /*
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
-	private Set<Rol> roles;
-     
-	public void addRol(Rol r) {
-		this.roles.add(r);
-	}
-	
-	public Set<Rol> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(Set<Rol> roles) {
-		this.roles = roles;
-	}*/
+   
 	public Integer getId() {
 		return id;
 	}

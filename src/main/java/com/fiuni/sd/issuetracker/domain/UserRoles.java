@@ -8,6 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -15,22 +17,31 @@ import org.hibernate.annotations.GenericGenerator;
 public class UserRoles extends BaseDomain{
 	private static final long serialVersionUID = 1L;
 
-	
-    @Id
-    @ManyToOne
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+	@GenericGenerator(name = "native", strategy = "native")
+	private Integer id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private User user;
 
-    @Id
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private Rol rol;
-    
 
-    @ManyToOne
-    @MapsId("proyecto_id")
+    @OneToOne
+    @JoinColumn(name = "proyecto_id", nullable = true)
     private Proyectos proyecto;
-    
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
     public void setProyecto(Proyectos p) {
     	this.proyecto = p;
     }

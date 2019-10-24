@@ -19,19 +19,7 @@ public class UserDTO  extends BaseDTO{
 	private Date creacion;
 
 	private String pass;
-/*	private Set<RolDTO> roles;
-	public void addRol(RolDTO r) {
-		this.roles.add(r);
-	}
-	
-	public Set<RolDTO> getRoles() {
-	
-		return roles;
-	}
-	public void setRoles(Set<RolDTO> roles) {
-		this.roles = roles;
-	}
-*/
+
     private Set<UserRolDTO> user_roles;
     public void addRol(UserRolDTO r) {
 		this.user_roles.add(r);

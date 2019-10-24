@@ -10,5 +10,5 @@ import com.fiuni.sd.issuetracker.dto.UserResultDTO;
 public interface IUserService extends IBaseService<UserDTO, User, UserResultDTO>{
 	public UserResultDTO findALL(Pageable pageable ,String search);
 	public UserDTO addUserRol(int userId ,int proyecto_id, int rolId);
-	//	public UserDTO addRol(int userId , int rolId);
+	public void removeById(int id);
 }

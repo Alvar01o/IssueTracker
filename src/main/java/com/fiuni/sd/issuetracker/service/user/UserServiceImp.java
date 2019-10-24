@@ -13,9 +13,11 @@ import com.fiuni.sd.issuetracker.service.base.BaseServiceImpl;
 import com.fiuni.sd.issuetracker.dao.IProyectosDao;
 import com.fiuni.sd.issuetracker.dao.IRolDao;
 import com.fiuni.sd.issuetracker.dao.IUserDao;
+import com.fiuni.sd.issuetracker.dao.IUserRolesDao;
 import com.fiuni.sd.issuetracker.domain.Proyectos;
 import com.fiuni.sd.issuetracker.domain.Rol;
 import com.fiuni.sd.issuetracker.domain.User;
+import com.fiuni.sd.issuetracker.domain.UserRoles;
 import com.fiuni.sd.issuetracker.dto.GruposDTO;
 import com.fiuni.sd.issuetracker.dto.ProyectosDTO;
 import com.fiuni.sd.issuetracker.dto.RolDTO;
@@ -32,7 +34,8 @@ public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDT
 	private IProyectosDao proyectoDao;
 	@Autowired
 	private IRolDao rolDao;
-	
+	@Autowired 
+	private IUserRolesDao user_rolesDao;
 	@Override
 	public UserDTO save(UserDTO dto) {
 		//encriptar contrasenha
@@ -55,7 +58,7 @@ public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDT
 		return usersResult;
 	}
 
-	public void removeById(int id) {
+	public void removeById(int id) throws IllegalArgumentException {
 		userDao.deleteById(id);
 	}
 	
@@ -63,9 +66,12 @@ public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDT
 		Rol r = rolDao.findById(rolId).get();
 		User user =userDao.findById(userId).get();
 		Proyectos p = proyectoDao.findById(proyecto_id).get();
-/*		user.addRol(r);
-		userDao.save(user);*/
-		return this.convertDomainToDto(user);
+		UserRoles ur = new UserRoles();
+		ur.setProyecto(p);
+		ur.setRol(r);
+		ur.setUser(user);
+		user_rolesDao.save(ur);
+		return this.convertDomainToDto(userDao.findById(userId).get());
 	}
 	
 	public UserResultDTO getAll(Pageable pageable) {
@@ -89,8 +95,10 @@ public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDT
 		if(domain.getUserRoles() != null) {
 			Set<UserRolDTO> roles = new HashSet<UserRolDTO>();
 	           domain.getUserRoles().forEach((rol) -> {
+	        	   System.out.println(rol.getId());
 	        	   UserRolDTO r = new UserRolDTO();
 	        	   ProyectosDTO p = new ProyectosDTO();
+	        	   System.out.println(rol.getProyectos());
 	        	   p.setDescripcion(rol.getProyectos().getDescripcion());
 	        	   p.setId(rol.getProyectos().getId());
 	        	   p.setNombre(rol.getProyectos().getNombre());
@@ -107,7 +115,7 @@ public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDT
 	        	   rl.setNombre(rol.getRol().getName());
 	        	   rl.setValor(rol.getRol().getValor());
 	        	   r.setRol(rl);
-	        	   r.setUser(dto);
+//	        	   r.setUser(dto);
                    roles.add(r);
 	           });
 	           if(!roles.isEmpty()) {

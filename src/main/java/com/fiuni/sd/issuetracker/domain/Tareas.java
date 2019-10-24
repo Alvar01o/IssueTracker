@@ -2,12 +2,16 @@ package com.fiuni.sd.issuetracker.domain;
 
 import java.util.Date;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 @Entity
 public class Tareas extends BaseDomain{
@@ -23,7 +27,11 @@ public class Tareas extends BaseDomain{
 	private int prioridad;
 	@Column
 	private String estado;
+
+	@Basic(optional = false)
+	@CreationTimestamp
 	@Column
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date creacion;
 	@Column
 	private Date limite;

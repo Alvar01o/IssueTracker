@@ -12,12 +12,14 @@ import com.fiuni.sd.issuetracker.domain.Tareas;
 public class TablerosDTO  extends BaseDTO {
 	private String nombre; 
 	private String descripcion;
-	private Set<Tareas> tareas;
-	public Set<Tareas> getTareas() {
+	private Set<TareasDTO> tareas;
+	public Set<TareasDTO> getTareas() {
 		return tareas;
 	}
-
-	public void setTareas(Set<Tareas> tareas) {
+    public void addTarea(TareasDTO r) {
+		this.tareas.add(r);
+	}
+	public void setTareas(Set<TareasDTO> tareas) {
 		this.tareas = tareas;
 	}
 	public void setNombre(String n) {

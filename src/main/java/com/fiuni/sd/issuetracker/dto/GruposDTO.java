@@ -2,6 +2,7 @@ package com.fiuni.sd.issuetracker.dto;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -18,7 +19,16 @@ public class GruposDTO extends BaseDTO {
 	@DateTimeFormat(pattern = "dd/MM/yyyy")
 	private Date creacion;
 	//usuarios
-	
+    private Set<UserDTO> users;
+    public void addUser(UserDTO r) {
+		this.users.add(r);
+	}
+	public void setUsers(Set<UserDTO> us) {
+		this.users = us;
+	}	
+	public Set<UserDTO> getUsers() {
+		return users;
+	}
 	public void setNombre(String n) {
 		this.nombre= n;
 	}

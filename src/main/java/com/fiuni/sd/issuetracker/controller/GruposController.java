@@ -24,8 +24,7 @@ public class GruposController {
 	
 	@GetMapping("/{id}")
 	public GruposDTO getById(@PathVariable Long id) {
-		System.out.println(id);
-		GruposDTO u= grupoService.getById(id);
+		GruposDTO u = grupoService.getById(id);
 		return grupoService.getById(id);
 	}
 
@@ -38,11 +37,12 @@ public class GruposController {
 	public GruposResultDTO findUser(@PathVariable(value = "search") String search , @PathVariable(value = "page_num")Integer pageNum) {
 		return grupoService.findALL(PageRequest.of((pageNum-1), 30) , search); 
 	}
-/*	
-	@PostMapping(path = "addroll/{user_id}/{proyecto_id}/{rol_id}")
-	public GruposDTO addRoll(@PathVariable(value = "user_id")int user_id,@PathVariable(value = "proyecto_id")int proyecto_id, @PathVariable(value = "rol_id") int rol_id) {
-		return grupoService.addUserRol(user_id,proyecto_id, rol_id) ;
-	}*/
+	
+	@PostMapping(path = "/adduser/{grupo_id}/{user_id}")
+	public GruposDTO addUser(@PathVariable(value = "grupo_id")int grupo_id,@PathVariable(value = "user_id")int user_id) {
+		return grupoService.addUserToGrupo(grupo_id,user_id);
+	}
+	
 	@PostMapping()
 	public GruposDTO save(@Valid @RequestBody GruposDTO grupo) {
 		return grupoService.save(grupo);
