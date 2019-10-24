@@ -2,14 +2,13 @@ package com.fiuni.sd.issuetracker.service.user;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
+import org.springframework.util.DigestUtils;
 import com.fiuni.sd.issuetracker.service.base.BaseServiceImpl;
 import com.fiuni.sd.issuetracker.dao.IProyectosDao;
 import com.fiuni.sd.issuetracker.dao.IRolDao;
@@ -17,7 +16,6 @@ import com.fiuni.sd.issuetracker.dao.IUserDao;
 import com.fiuni.sd.issuetracker.domain.Proyectos;
 import com.fiuni.sd.issuetracker.domain.Rol;
 import com.fiuni.sd.issuetracker.domain.User;
-import com.fiuni.sd.issuetracker.domain.UserRoles;
 import com.fiuni.sd.issuetracker.dto.GruposDTO;
 import com.fiuni.sd.issuetracker.dto.ProyectosDTO;
 import com.fiuni.sd.issuetracker.dto.RolDTO;
@@ -37,8 +35,9 @@ public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDT
 	
 	@Override
 	public UserDTO save(UserDTO dto) {
-		final User user = convertDtoToDomain(dto);
-		final User userD = userDao.save(user);
+		//encriptar contrasenha
+		dto.setPass(DigestUtils.md5DigestAsHex(dto.getPass().getBytes()).toString()); 
+		final User userD = userDao.save(convertDtoToDomain(dto));
 		return convertDomainToDto(userD);
 	}
 
@@ -125,6 +124,7 @@ public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDT
 		u.setApellido(dto.getApellido());
 		u.setCreacion(dto.getCreacion());
 		u.setEmail(dto.getEmail());
+		u.setPass(dto.getPass());
 		return u;
 	}
 

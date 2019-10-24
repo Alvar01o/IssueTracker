@@ -1,20 +1,22 @@
 package com.fiuni.sd.issuetracker.service.tablero;
 import java.util.ArrayList;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
+import org.springframework.stereotype.Service;
 import com.fiuni.sd.issuetracker.dao.ITablerosDao;
-import com.fiuni.sd.issuetracker.dao.ITareasDao;
+import com.fiuni.sd.issuetracker.domain.Grupos;
+import com.fiuni.sd.issuetracker.domain.Proyectos;
 import com.fiuni.sd.issuetracker.domain.Tableros;
-import com.fiuni.sd.issuetracker.domain.Tareas;
+import com.fiuni.sd.issuetracker.dto.ProyectosDTO;
 import com.fiuni.sd.issuetracker.dto.TablerosDTO;
 import com.fiuni.sd.issuetracker.dto.TablerosResultDTO;
-import com.fiuni.sd.issuetracker.dto.TareasDTO;
-import com.fiuni.sd.issuetracker.dto.TareasResultDTO;
 import com.fiuni.sd.issuetracker.service.base.BaseServiceImpl;
+
+@Service
 public class TableroServiceImp extends BaseServiceImpl<TablerosDTO, Tableros, TablerosResultDTO> implements ITableroService {
 	@Autowired
 	private ITablerosDao tablerosDap;
@@ -51,13 +53,15 @@ public class TableroServiceImp extends BaseServiceImpl<TablerosDTO, Tableros, Ta
 		return dto;
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	protected Tableros convertDtoToDomain(TablerosDTO dto) {
 		Tableros T = new Tableros();
-		T.setDescripcion(dto.getDescripcion());
 		T.setId(dto.getId());
+		T.setDescripcion(dto.getDescripcion());
 		T.setNombre(dto.getNombre());
-		//set tareas
 		return T;
 	}
 

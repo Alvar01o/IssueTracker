@@ -28,15 +28,19 @@ public class Tableros extends BaseDomain {
 	private String nombre; 
 	@Column
 	private String descripcion;
+	
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "tablero_tareas", joinColumns = @JoinColumn(name = "tablero_id"), inverseJoinColumns = @JoinColumn(name = "tarea_id"))
 	private Set<Tareas> tareas;
 
-    @ManyToOne
-    @JoinColumn(name = "fk_proyectos", nullable = false, updatable = false)
-    private Proyectos proyecto;
-    
 
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
 	public void setNombre(String n) {
 		this.nombre= n;
 	}
