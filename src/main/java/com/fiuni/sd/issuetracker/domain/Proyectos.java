@@ -1,6 +1,7 @@
 package com.fiuni.sd.issuetracker.domain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -37,6 +38,10 @@ public class Proyectos extends BaseDomain{
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "proyecto_tableros", joinColumns = @JoinColumn(name = "proyecto_id"), inverseJoinColumns = @JoinColumn(name = "tablero_id"))
 	private Set<Tableros> tableros;
+	
+    public void addTablero(Tableros r) {
+		this.tableros.add(r);
+	}
 	public Integer getId() {
 		return id;
 	}

@@ -10,12 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.fiuni.sd.issuetracker.dto.TablerosDTO;
-import com.fiuni.sd.issuetracker.dto.TablerosResultDTO;
+import com.fiuni.sd.issuetracker.utils.Settings;
 import com.fiuni.sd.issuetracker.dto.TareasDTO;
 import com.fiuni.sd.issuetracker.dto.TareasResultDTO;
-import com.fiuni.sd.issuetracker.service.tablero.ITableroService;
 import com.fiuni.sd.issuetracker.service.tarea.ITareasService;
 
 @RestController
@@ -33,12 +30,12 @@ public class TareasController {
 
 	@GetMapping(path = "/page/{page_num}")
 	public TareasResultDTO getUsers(@PathVariable(value = "page_num")Integer pageNum) {
-		return tareasService.getAll(PageRequest.of((pageNum-1), 30));
+		return tareasService.getAll(PageRequest.of((pageNum-1), Settings.PAGINACION));
 	}
 
 	@GetMapping(path = "/find/{search}/{page_num}")
 	public TareasResultDTO findTarea(@PathVariable(value = "search") String search , @PathVariable(value = "page_num")Integer pageNum) {
-		return tareasService.findALL(PageRequest.of((pageNum-1), 30) , search); 
+		return tareasService.findALL(PageRequest.of((pageNum-1), Settings.PAGINACION) , search); 
 	}
 /*	
 	@PostMapping(path = "addroll/{user_id}/{proyecto_id}/{rol_id}")

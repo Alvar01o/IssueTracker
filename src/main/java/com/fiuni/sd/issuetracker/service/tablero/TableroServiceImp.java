@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import com.fiuni.sd.issuetracker.dao.IProyectosDao;
 import com.fiuni.sd.issuetracker.dao.ITablerosDao;
 import com.fiuni.sd.issuetracker.domain.Grupos;
 import com.fiuni.sd.issuetracker.domain.Proyectos;
@@ -24,7 +26,8 @@ import com.fiuni.sd.issuetracker.service.base.BaseServiceImpl;
 public class TableroServiceImp extends BaseServiceImpl<TablerosDTO, Tableros, TablerosResultDTO> implements ITableroService {
 	@Autowired
 	private ITablerosDao tablerosDap;
-	
+	@Autowired
+	private IProyectosDao proyectosDao;	
 	@Override
 	public TablerosDTO save(TablerosDTO dto) {
 		final Tableros t = convertDtoToDomain(dto);
@@ -110,6 +113,15 @@ public class TableroServiceImp extends BaseServiceImpl<TablerosDTO, Tableros, Ta
 		final TablerosResultDTO tResult = new TablerosResultDTO();
 		tResult.setTableros(tablrs);
 		return tResult;
+	}
+
+	@Override
+	public TablerosDTO addTablero(TablerosDTO t, Long p) {
+		Proyectos pro = proyectosDao.findById(p.intValue()).get();
+		Tableros ta = tablerosDap.save(this.convertDtoToDomain(t));
+		pro.addTablero(ta);
+		proyectosDao.save(pro);
+		return this.convertDomainToDto(ta);
 	}
 
 }

@@ -18,7 +18,7 @@ import com.fiuni.sd.issuetracker.dto.GruposDTO;
 import com.fiuni.sd.issuetracker.dto.GruposResultDTO;
 
 import com.fiuni.sd.issuetracker.dto.UserDTO;
-
+import com.fiuni.sd.issuetracker.dto.UserResultDTO;
 import com.fiuni.sd.issuetracker.service.base.BaseServiceImpl;
 @Service
 public class GrupoServiceImp extends BaseServiceImpl<GruposDTO, Grupos, GruposResultDTO> implements IGrupoService {
@@ -42,11 +42,16 @@ public class GrupoServiceImp extends BaseServiceImpl<GruposDTO, Grupos, GruposRe
 	@Override
 	public GruposResultDTO getAll(Pageable pageable) {
 		final List<GruposDTO> ts = new ArrayList<>();
+		final GruposResultDTO gResult = new GruposResultDTO();
 		Page<Grupos> results=gruposDao.findAll(pageable);
-		results.forEach(us->ts.add(convertDomainToDto(us)));
-		final GruposResultDTO tResult = new GruposResultDTO();
-		tResult.setGrupos(ts);
-		return tResult;
+		results.getContent().forEach(us->ts.add(convertDomainToDto(us)));
+
+		gResult.setGrupos(ts);
+		gResult.setCurrentPage(results.getNumber());
+		gResult.setLastPage(results.getTotalPages());
+		gResult.setCurrentPageTotalItems(results.getNumberOfElements());
+		gResult.setTotalItems(results.getTotalElements());
+		return gResult;
 	}
 
 	@Override
@@ -112,6 +117,11 @@ public class GrupoServiceImp extends BaseServiceImpl<GruposDTO, Grupos, GruposRe
 		g.addUser(user);
 		gruposDao.save(g);
 		return convertDomainToDto(g);
+	}
+
+	@Override
+	public void removeById(int id) {
+		gruposDao.deleteById(id); 
 	}
 
 }

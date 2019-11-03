@@ -1,9 +1,12 @@
 package com.fiuni.sd.issuetracker.dto;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import com.fiuni.sd.issuetracker.domain.Tableros;
 
 
 
@@ -12,7 +15,15 @@ public class ProyectosDTO  extends BaseDTO{
 	private String nombre;
 	private String descripcion;
 	private GruposDTO grupo;
-	//tableros
+	private Set<TablerosDTO> tableros;
+	
+	public Set<TablerosDTO> getTableros() {
+		return tableros;
+	}
+
+	public void setTableros(Set<TablerosDTO> tableros) {
+		this.tableros = tableros;
+	}
 	public void setGrupo(GruposDTO g) {
 		this.grupo = g;
 	}

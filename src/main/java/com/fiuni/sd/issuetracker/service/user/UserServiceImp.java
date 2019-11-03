@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import com.fiuni.sd.issuetracker.service.base.BaseServiceImpl;
+import com.fiuni.sd.issuetracker.utils.Settings;
 import com.fiuni.sd.issuetracker.dao.IProyectosDao;
 import com.fiuni.sd.issuetracker.dao.IRolDao;
 import com.fiuni.sd.issuetracker.dao.IUserDao;
@@ -59,7 +60,7 @@ public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDT
 	}
 
 	public void removeById(int id) throws IllegalArgumentException {
-		userDao.deleteById(id);
+		userDao.deleteById(id); 
 	}
 	
 	public UserDTO addUserRol(int userId ,int proyecto_id, int rolId) {
@@ -76,10 +77,16 @@ public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDT
 	
 	public UserResultDTO getAll(Pageable pageable) {
 		final List<UserDTO> users = new ArrayList<>();
-		Page<User> results=userDao.findAll(pageable);
-		results.forEach(us->users.add(convertDomainToDto(us)));
 		final UserResultDTO usersResult = new UserResultDTO();
+
+		Page<User> page=userDao.findAll(pageable);
+		
+		page.getContent().forEach(user -> users.add(convertDomainToDto(user)));
 		usersResult.setUsers(users);
+		usersResult.setCurrentPage(page.getNumber());
+		usersResult.setLastPage(page.getTotalPages());
+		usersResult.setCurrentPageTotalItems(page.getNumberOfElements());
+		usersResult.setTotalItems(page.getTotalElements());
 		return usersResult;
 	}
 

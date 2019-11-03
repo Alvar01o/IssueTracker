@@ -1,19 +1,27 @@
 package com.fiuni.sd.issuetracker.service.proyecto;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.fiuni.sd.issuetracker.dao.IGruposDao;
 import com.fiuni.sd.issuetracker.dao.IProyectosDao;
+import com.fiuni.sd.issuetracker.dao.ITablerosDao;
 import com.fiuni.sd.issuetracker.domain.Grupos;
 import com.fiuni.sd.issuetracker.domain.Proyectos;
+import com.fiuni.sd.issuetracker.domain.Tableros;
+import com.fiuni.sd.issuetracker.domain.User;
 import com.fiuni.sd.issuetracker.dto.GruposDTO;
 import com.fiuni.sd.issuetracker.dto.ProyectosDTO;
 import com.fiuni.sd.issuetracker.dto.ProyectosResultDTO;
+import com.fiuni.sd.issuetracker.dto.TablerosDTO;
+import com.fiuni.sd.issuetracker.dto.UserDTO;
 import com.fiuni.sd.issuetracker.service.base.BaseServiceImpl;
 
 @Service
@@ -22,6 +30,9 @@ public class ProyectosServiceImp extends BaseServiceImpl<ProyectosDTO, Proyectos
 	private IProyectosDao proyectosDao;
 	@Autowired
 	private IGruposDao gruposDao;
+
+	@Autowired
+	private ITablerosDao tablerosDao;
 	@Override
 	public ProyectosDTO save(ProyectosDTO dto) {
 		final Proyectos t = convertDtoToDomain(dto);
@@ -31,6 +42,7 @@ public class ProyectosServiceImp extends BaseServiceImpl<ProyectosDTO, Proyectos
 
 	@Override
 	public ProyectosDTO getById(Long id) {
+		System.out.println(id);
 		return convertDomainToDto(proyectosDao.findById(id.intValue()).get() );
 	}
 
@@ -60,11 +72,27 @@ public class ProyectosServiceImp extends BaseServiceImpl<ProyectosDTO, Proyectos
 		dto.setId(bean.getId());
 		dto.setNombre(bean.getNombre());
 		dto.setDescripcion(bean.getDescripcion());
-		GruposDTO g = new GruposDTO();
-		g.setCreacion(bean.getGrupo().getCreacion());
-		g.setId(bean.getGrupo().getId());
-		g.setNombre(bean.getGrupo().getNombre());
-		dto.setGrupo(g);
+		if(bean.getGrupo()!=null) {
+			GruposDTO g = new GruposDTO();
+			g.setCreacion(bean.getGrupo().getCreacion());
+			g.setId(bean.getGrupo().getId());
+			g.setNombre(bean.getGrupo().getNombre());
+			dto.setGrupo(g);
+		}
+
+		if(bean.getTableros() != null) {
+			Set<TablerosDTO> tableros = new HashSet<TablerosDTO>();
+			bean.getTableros().forEach((u) -> {
+	        	   TablerosDTO us = new TablerosDTO();
+	        	   us.setNombre(u.getNombre());
+	        	   us.setDescripcion(u.getDescripcion());
+	        	   us.setId(u.getId());
+	        	   tableros.add(us);
+	           });
+	           if(!tableros.isEmpty()) {
+	               dto.setTableros(tableros); // set Result on this vblock
+	           }
+		}
 		return dto;
 	}
 
@@ -81,11 +109,20 @@ public class ProyectosServiceImp extends BaseServiceImpl<ProyectosDTO, Proyectos
 			g1.setCreacion(g.getCreacion());
 			g1.setNombre(g.getNombre());
 			P.setGrupo(g1);
-		} else {
-			System.out.println("no hay grupo");
-		}
+		} 
 		//set tableros
 		return P;
 	}
+
+	@Override
+	public ProyectosResultDTO findByGrupoId(PageRequest pageable, Integer grupo_id) {
+		final List<ProyectosDTO> tablrs = new ArrayList<>();
+		Page<Proyectos> results=proyectosDao.findByGrupoId( grupo_id, pageable);
+		results.forEach(us->tablrs.add(convertDomainToDto(us)));
+		final ProyectosResultDTO tResult = new ProyectosResultDTO();
+		tResult.setProyectos(tablrs);
+		return tResult;
+	}
+
 
 }

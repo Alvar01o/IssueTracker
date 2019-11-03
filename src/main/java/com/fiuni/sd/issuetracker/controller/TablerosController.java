@@ -11,13 +11,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fiuni.sd.issuetracker.domain.Proyectos;
 import com.fiuni.sd.issuetracker.dto.GruposDTO;
 import com.fiuni.sd.issuetracker.dto.GruposResultDTO;
 import com.fiuni.sd.issuetracker.dto.ProyectosDTO;
+import com.fiuni.sd.issuetracker.dto.ProyectosResultDTO;
 import com.fiuni.sd.issuetracker.dto.TablerosDTO;
 import com.fiuni.sd.issuetracker.dto.TablerosResultDTO;
 import com.fiuni.sd.issuetracker.service.proyecto.IProyectosService;
 import com.fiuni.sd.issuetracker.service.tablero.ITableroService;
+import com.fiuni.sd.issuetracker.utils.Settings;
 
 @RestController
 @RequestMapping("/tablero")
@@ -36,12 +39,12 @@ public class TablerosController {
 
 	@GetMapping(path = "/page/{page_num}")
 	public TablerosResultDTO getUsers(@PathVariable(value = "page_num")Integer pageNum) {
-		return tablerosService.getAll(PageRequest.of((pageNum-1), 30));
+		return tablerosService.getAll(PageRequest.of((pageNum-1),  Settings.PAGINACION));
 	}
-
+	
 	@GetMapping(path = "/find/{search}/{page_num}")
 	public TablerosResultDTO findUser(@PathVariable(value = "search") String search , @PathVariable(value = "page_num")Integer pageNum) {
-		return tablerosService.findALL(PageRequest.of((pageNum-1), 30) , search); 
+		return tablerosService.findALL(PageRequest.of((pageNum-1),  Settings.PAGINACION) , search); 
 	}
 /*	
 	@PostMapping(path = "addroll/{user_id}/{proyecto_id}/{rol_id}")
@@ -50,6 +53,6 @@ public class TablerosController {
 	}*/
 	@PostMapping("/{proyecto_id}")
 	public TablerosDTO save(@Valid @RequestBody TablerosDTO t, @PathVariable(value = "proyecto_id")Long proyecto_id) {
-		return tablerosService.save(t);
+		return tablerosService.addTablero( t,proyecto_id);
 	}
 }

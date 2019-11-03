@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.fiuni.sd.issuetracker.utils.Settings;
 import com.fiuni.sd.issuetracker.dto.MessageDTO;
 import com.fiuni.sd.issuetracker.dto.UserDTO;
 import com.fiuni.sd.issuetracker.dto.UserResultDTO;
@@ -33,7 +33,7 @@ public class UserController {
 	public MessageDTO deleteById(@PathVariable Long id) {
 		try	{
 			userService.removeById(id.intValue());
-			return new MessageDTO("Eliminado");
+			return new MessageDTO("Usuario Eliminado");
 		} catch(IllegalArgumentException e) {
 			return new MessageDTO("Error al eliminar usuario.");			
 		} catch(EmptyResultDataAccessException e1) {
@@ -55,13 +55,13 @@ public class UserController {
 
 	@GetMapping(path = "/page/{page_num}")
 	public UserResultDTO getUsers(@PathVariable(value = "page_num")Integer pageNum) {
-		return userService.getAll(PageRequest.of((pageNum-1), 30));
+		return userService.getAll(PageRequest.of((pageNum-1), Settings.PAGINACION));
 	}
 
 	@GetMapping(path = "/find/{search}/{page_num}")
 	public UserResultDTO findUser(@PathVariable(value = "search") String search , @PathVariable(value = "page_num")Integer pageNum) {
 		logger.warn("Hey, This is a warning!");
-		return userService.findALL(PageRequest.of((pageNum-1), 30) , search); 
+		return userService.findALL(PageRequest.of((pageNum-1), Settings.PAGINACION) , search); 
 	}
 	
 	@PostMapping(path = "/addroll/{user_id}/{proyecto_id}/{rol_id}")

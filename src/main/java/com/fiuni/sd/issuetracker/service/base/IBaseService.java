@@ -10,7 +10,7 @@ public interface IBaseService<DTO extends BaseDTO, BEAN extends BaseDomain, R ex
 
 	public DTO save(DTO dto);
 
-	public DTO getById(Long id);
+	public DTO getById(Long id); 
 
 	public R getAll(Pageable pageable);
 

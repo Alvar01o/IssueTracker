@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 public class TablerosResultDTO extends BaseResultDTO<TablerosDTO>{
 
-	public List<TablerosDTO> getTareas() {
+	public List<TablerosDTO> getTableros() {
 		return getList();
 	}
 

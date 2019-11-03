@@ -18,6 +18,7 @@ import com.fiuni.sd.issuetracker.dto.UserDTO;
 import com.fiuni.sd.issuetracker.dto.UserResultDTO;
 import com.fiuni.sd.issuetracker.service.grupo.IGrupoService;
 import com.fiuni.sd.issuetracker.service.proyecto.IProyectosService;
+import com.fiuni.sd.issuetracker.utils.Settings;
 
 @RestController
 @RequestMapping("/proyecto")
@@ -35,12 +36,17 @@ public class ProyectosController {
 
 	@GetMapping(path = "/page/{page_num}")
 	public ProyectosResultDTO getUsers(@PathVariable(value = "page_num")Integer pageNum) {
-		return proyectoService.getAll(PageRequest.of((pageNum-1), 30));
+		return proyectoService.getAll(PageRequest.of((pageNum-1),  Settings.PAGINACION));
+	}
+	
+	@GetMapping(path = "/getbygrupo/{grupo_id}/{page_num}")
+	public ProyectosResultDTO getbyGrupo( @PathVariable(value = "grupo_id")Integer grupo_id, @PathVariable(value = "page_num")Integer page_num) {
+		return proyectoService.findByGrupoId(PageRequest.of((page_num-1),  Settings.PAGINACION) , grupo_id); 
 	}
 
 	@GetMapping(path = "/find/{search}/{page_num}")
 	public ProyectosResultDTO findUser(@PathVariable(value = "search") String search , @PathVariable(value = "page_num")Integer pageNum) {
-		return proyectoService.findALL(PageRequest.of((pageNum-1), 30) , search); 
+		return proyectoService.findALL(PageRequest.of((pageNum-1),  Settings.PAGINACION) , search); 
 	}
 	/*
 	@PostMapping(path = "addroll/{user_id}/{proyecto_id}/{rol_id}")
