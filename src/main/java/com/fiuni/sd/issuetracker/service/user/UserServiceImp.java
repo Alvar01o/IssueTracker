@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,7 @@ public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDT
 	}
 
 	@Override
+	@Cacheable(value = Settings.CACHE_NAME , key = "'api_user_'+ #id")
 	public UserDTO getById(Long id) {
 		return convertDomainToDto(userDao.findById(id.intValue()).get() );
 	}

@@ -1,0 +1,4 @@
+ memcached.cache:
+   servers: 127.0.0.1:11211
+   mode: static
+#   expirations: default:86400 
