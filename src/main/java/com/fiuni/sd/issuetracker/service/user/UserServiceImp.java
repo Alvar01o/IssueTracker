@@ -9,6 +9,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import com.fiuni.sd.issuetracker.service.base.BaseServiceImpl;
 import com.fiuni.sd.issuetracker.utils.Settings;
@@ -47,6 +48,7 @@ public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDT
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	@Cacheable(value = Settings.CACHE_NAME , key = "'api_user_'+ #id")
 	public UserDTO getById(Long id) {
 		return convertDomainToDto(userDao.findById(id.intValue()).get() );
