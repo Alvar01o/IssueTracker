@@ -5,10 +5,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fiuni.sd.issuetracker.dao.IGruposDao;
 import com.fiuni.sd.issuetracker.dao.IProyectosDao;
@@ -23,6 +26,7 @@ import com.fiuni.sd.issuetracker.dto.ProyectosResultDTO;
 import com.fiuni.sd.issuetracker.dto.TablerosDTO;
 import com.fiuni.sd.issuetracker.dto.UserDTO;
 import com.fiuni.sd.issuetracker.service.base.BaseServiceImpl;
+import com.fiuni.sd.issuetracker.utils.Settings;
 
 @Service
 public class ProyectosServiceImp extends BaseServiceImpl<ProyectosDTO, Proyectos, ProyectosResultDTO> implements IProyectosService {
@@ -30,23 +34,31 @@ public class ProyectosServiceImp extends BaseServiceImpl<ProyectosDTO, Proyectos
 	private IProyectosDao proyectosDao;
 	@Autowired
 	private IGruposDao gruposDao;
-
+	@Autowired 
+	private CacheManager cacheManager;
 	@Autowired
 	private ITablerosDao tablerosDao;
 	@Override
 	public ProyectosDTO save(ProyectosDTO dto) {
 		final Proyectos t = convertDtoToDomain(dto);
 		final Proyectos td = proyectosDao.save(t);
+		ProyectosDTO us = convertDomainToDto(td);
+		if(td.getId() == null) {
+			cacheManager.getCache(Settings.CACHE_NAME).put("api_proyecto_"+td.getId()  , us );
+		}
 		return convertDomainToDto(td);
 	}
 
 	@Override
+	@Transactional(readOnly = true)
+	@Cacheable(value = Settings.CACHE_NAME , key = "'api_proyecto_'+ #id")
 	public ProyectosDTO getById(Long id) {
 		System.out.println(id);
 		return convertDomainToDto(proyectosDao.findById(id.intValue()).get() );
 	}
 
 	@Override
+	@Transactional(readOnly = true)	
 	public ProyectosResultDTO getAll(Pageable pageable) {
 		final List<ProyectosDTO> ts = new ArrayList<>();
 		Page<Proyectos> results=proyectosDao.findAll(pageable);
@@ -57,10 +69,15 @@ public class ProyectosServiceImp extends BaseServiceImpl<ProyectosDTO, Proyectos
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public ProyectosResultDTO findALL(Pageable pageable, String search) {
 		final List<ProyectosDTO> tablrs = new ArrayList<>();
 		Page<Proyectos> results=proyectosDao.findByNombreIgnoreCaseOrDescripcionIgnoreCase(search, search, pageable);
-		results.forEach(us->tablrs.add(convertDomainToDto(us)));
+		results.forEach((us)->{
+			ProyectosDTO pdto = convertDomainToDto(us);
+			tablrs.add(pdto);
+			cacheManager.getCache(Settings.CACHE_NAME).put("api_proyecto_"+us.getId()  , pdto );			
+		});
 		final ProyectosResultDTO tResult = new ProyectosResultDTO();
 		tResult.setProyectos(tablrs);
 		return tResult;
