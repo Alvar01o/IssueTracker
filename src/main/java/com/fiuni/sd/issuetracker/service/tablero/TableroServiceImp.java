@@ -5,9 +5,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fiuni.sd.issuetracker.dao.IProyectosDao;
 import com.fiuni.sd.issuetracker.dao.ITablerosDao;
@@ -21,6 +24,7 @@ import com.fiuni.sd.issuetracker.dto.TablerosResultDTO;
 import com.fiuni.sd.issuetracker.dto.TareasDTO;
 import com.fiuni.sd.issuetracker.dto.UserDTO;
 import com.fiuni.sd.issuetracker.service.base.BaseServiceImpl;
+import com.fiuni.sd.issuetracker.utils.Settings;
 
 @Service
 public class TableroServiceImp extends BaseServiceImpl<TablerosDTO, Tableros, TablerosResultDTO> implements ITableroService {
@@ -28,23 +32,39 @@ public class TableroServiceImp extends BaseServiceImpl<TablerosDTO, Tableros, Ta
 	private ITablerosDao tablerosDap;
 	@Autowired
 	private IProyectosDao proyectosDao;	
+	@Autowired 
+	private CacheManager cacheManager;
+	
 	@Override
 	public TablerosDTO save(TablerosDTO dto) {
 		final Tableros t = convertDtoToDomain(dto);
 		final Tableros td = tablerosDap.save(t);
+		TablerosDTO us = convertDomainToDto(td);
+		if(us.getId() == null) {
+			cacheManager.getCache(Settings.CACHE_NAME).put("api_tablero_"+us.getId()  , us );
+		}
 		return convertDomainToDto(td);
 	}
 
 	@Override
+	@Transactional(readOnly = true)
+	@Cacheable(value = Settings.CACHE_NAME , key = "'api_tablero_'+ #id")
 	public TablerosDTO getById(Long id) {
 		return convertDomainToDto(tablerosDap.findById(id.intValue()).get() );
+
 	}
 
 	@Override
 	public TablerosResultDTO getAll(Pageable pageable) {
 		final List<TablerosDTO> ts = new ArrayList<>();
 		Page<Tableros> results=tablerosDap.findAll(pageable);
-		results.forEach(us->ts.add(convertDomainToDto(us)));
+		results.forEach((us)->
+		{
+			TablerosDTO tab = convertDomainToDto(us);
+			ts.add(tab);
+			cacheManager.getCache(Settings.CACHE_NAME).put("api_tablero_"+us.getId()  , tab );
+			
+		});
 		final TablerosResultDTO tResult = new TablerosResultDTO();
 		tResult.setTableros(ts);
 		return tResult;
@@ -56,7 +76,7 @@ public class TableroServiceImp extends BaseServiceImpl<TablerosDTO, Tableros, Ta
 		dto.setDescripcion(domain.getDescripcion());
 		dto.setNombre(domain.getNombre());
 		dto.setId(domain.getId());
-		if(domain.getTareas() != null) {
+		if(domain.getTareas() != null) { 
 			Set<TareasDTO> tareas = new HashSet<TareasDTO>();
 	           domain.getTareas().forEach((u) -> {
 	        	   TareasDTO t = new TareasDTO();
@@ -121,7 +141,9 @@ public class TableroServiceImp extends BaseServiceImpl<TablerosDTO, Tableros, Ta
 		Tableros ta = tablerosDap.save(this.convertDtoToDomain(t));
 		pro.addTablero(ta);
 		proyectosDao.save(pro);
-		return this.convertDomainToDto(ta);
+		TablerosDTO tresult =convertDomainToDto(ta);
+		cacheManager.getCache(Settings.CACHE_NAME).put("api_tablero_"+tresult.getId()  , tresult );
+		return convertDomainToDto(ta);
 	}
 
 }

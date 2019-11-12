@@ -5,9 +5,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import com.fiuni.sd.issuetracker.service.base.BaseServiceImpl;
 import com.fiuni.sd.issuetracker.utils.Settings;
@@ -37,19 +40,29 @@ public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDT
 	private IRolDao rolDao;
 	@Autowired 
 	private IUserRolesDao user_rolesDao;
+	@Autowired 
+	private CacheManager cacheManager;
+	
+	
 	@Override
 	public UserDTO save(UserDTO dto) {
-		//encriptar contrasenha
 		dto.setPass(DigestUtils.md5DigestAsHex(dto.getPass().getBytes()).toString()); 
 		final User userD = userDao.save(convertDtoToDomain(dto));
+		UserDTO us = convertDomainToDto(userD);
+		if(userD.getId() == null) {
+			cacheManager.getCache(Settings.CACHE_NAME).put("api_user_"+us.getId()  , us );
+		}
 		return convertDomainToDto(userD);
 	}
 
 	@Override
+	@Transactional(readOnly = true)
+	@Cacheable(value = Settings.CACHE_NAME , key = "'api_user_'+ #id")
 	public UserDTO getById(Long id) {
 		return convertDomainToDto(userDao.findById(id.intValue()).get() );
 	}
-
+	
+	@Transactional(readOnly = true)
 	public UserResultDTO findALL(Pageable pageable ,String search) {
 		final List<UserDTO> users = new ArrayList<>();
 		Page<User> results=userDao.findByNombreIgnoreCaseOrApellidoIgnoreCaseOrEmailIgnoreCase(search, search, search, pageable);
@@ -78,10 +91,12 @@ public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDT
 	public UserResultDTO getAll(Pageable pageable) {
 		final List<UserDTO> users = new ArrayList<>();
 		final UserResultDTO usersResult = new UserResultDTO();
-
 		Page<User> page=userDao.findAll(pageable);
-		
-		page.getContent().forEach(user -> users.add(convertDomainToDto(user)));
+		page.getContent().forEach((user) ->{
+			UserDTO ud = convertDomainToDto(user);
+			users.add(ud);
+			cacheManager.getCache(Settings.CACHE_NAME).put("api_user_"+user.getId()  , ud );
+		});
 		usersResult.setUsers(users);
 		usersResult.setCurrentPage(page.getNumber());
 		usersResult.setLastPage(page.getTotalPages());

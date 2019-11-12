@@ -36,7 +36,7 @@ public class GruposController {
 		} catch(EmptyResultDataAccessException e1) {
 			return new MessageDTO("No se encontro el usuario.");			
 		}
-	}
+	} 
 
 	@GetMapping("/{id}")
 	public GruposDTO getById(@PathVariable Long id) {

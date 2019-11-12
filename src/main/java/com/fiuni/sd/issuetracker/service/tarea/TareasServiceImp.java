@@ -3,31 +3,45 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fiuni.sd.issuetracker.dao.ITablerosDao;
-import com.fiuni.sd.issuetracker.dao.ITareasDao;
+import com.fiuni.sd.issuetracker.dao.ITareasDao; 
 import com.fiuni.sd.issuetracker.domain.Tableros;
 import com.fiuni.sd.issuetracker.domain.Tareas;
 import com.fiuni.sd.issuetracker.dto.TareasDTO;
 import com.fiuni.sd.issuetracker.dto.TareasResultDTO;
+import com.fiuni.sd.issuetracker.dto.UserDTO;
 import com.fiuni.sd.issuetracker.service.base.BaseServiceImpl;
+import com.fiuni.sd.issuetracker.utils.Settings;
 @Service
 public class TareasServiceImp extends BaseServiceImpl<TareasDTO, Tareas, TareasResultDTO> implements ITareasService {
 	@Autowired
 	private ITareasDao tareasDap;
 	@Autowired
 	private ITablerosDao tablerosDap;
+	@Autowired 
+	private CacheManager cacheManager;
+	
 	@Override
 	public TareasDTO save(TareasDTO dto) {
 		final Tareas t = convertDtoToDomain(dto);
 		final Tareas td = tareasDap.save(t);
+		TareasDTO us = convertDomainToDto(td);
+		if(us.getId() == null) {
+			cacheManager.getCache(Settings.CACHE_NAME).put("api_tarea_"+us.getId()  , us );
+		}
 		return convertDomainToDto(td);
 	}
 
 	@Override
+	@Transactional(readOnly = true)
+	@Cacheable(value = Settings.CACHE_NAME , key = "'api_tarea_'+ #id")
 	public TareasDTO getById(Long id) {
 		return convertDomainToDto(tareasDap.findById(id.intValue()).get() );
 	}
@@ -43,10 +57,16 @@ public class TareasServiceImp extends BaseServiceImpl<TareasDTO, Tareas, TareasR
 	}
 
 	@Override
+	@Transactional(readOnly = true) 
 	public TareasResultDTO findALL(Pageable pageable, String search) {
 		final List<TareasDTO> users = new ArrayList<>();
 		Page<Tareas> results=tareasDap.findByNombreIgnoreCaseOrDescripcionIgnoreCase(search, search, pageable);
-		results.forEach(us->users.add(convertDomainToDto(us)));
+		results.forEach((us)-> {
+			TareasDTO ud = convertDomainToDto(us);
+			users.add(convertDomainToDto(us));
+			cacheManager.getCache(Settings.CACHE_NAME).put("api_tarea_"+ud.getId()  , ud );
+		}
+		);
 		final TareasResultDTO tResult = new TareasResultDTO();
 		tResult.setTareas(users);
 		return tResult;
