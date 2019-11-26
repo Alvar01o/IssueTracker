@@ -3,7 +3,9 @@ package com.fiuni.sd.issuetracker.controller;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,8 +31,12 @@ public class TablerosController {
 	ITableroService tablerosService;
 	@Autowired
 	IProyectosService proyectoService;
-
+	@Autowired 
+	private CacheManager cacheManager;
+	
+	
 	@GetMapping("/{id}")
+	@Secured({ "ROLE_ADMIN", "ROLE_MANAGER" , "ROLE_DEVELOPER"  })	
 	public TablerosDTO getById(@PathVariable Long id) {
 		System.out.println(id);
 		TablerosDTO u= tablerosService.getById(id);
@@ -38,21 +44,21 @@ public class TablerosController {
 	}
 
 	@GetMapping(path = "/page/{page_num}")
-	public TablerosResultDTO getUsers(@PathVariable(value = "page_num")Integer pageNum) {
+	@Secured({ "ROLE_ADMIN", "ROLE_MANAGER" , "ROLE_DEVELOPER"  })	
+	public TablerosResultDTO getTableros(@PathVariable(value = "page_num")Integer pageNum) {
 		return tablerosService.getAll(PageRequest.of((pageNum-1),  Settings.PAGINACION));
 	}
 	
 	@GetMapping(path = "/find/{search}/{page_num}")
-	public TablerosResultDTO findUser(@PathVariable(value = "search") String search , @PathVariable(value = "page_num")Integer pageNum) {
+	@Secured({ "ROLE_ADMIN", "ROLE_MANAGER" , "ROLE_DEVELOPER"  })
+	public TablerosResultDTO findTablero(@PathVariable(value = "search") String search , @PathVariable(value = "page_num")Integer pageNum) {
 		return tablerosService.findALL(PageRequest.of((pageNum-1),  Settings.PAGINACION) , search); 
 	}
-/*	
-	@PostMapping(path = "addroll/{user_id}/{proyecto_id}/{rol_id}")
-	public GruposDTO addRoll(@PathVariable(value = "user_id")int user_id,@PathVariable(value = "proyecto_id")int proyecto_id, @PathVariable(value = "rol_id") int rol_id) {
-		return grupoService.addUserRol(user_id,proyecto_id, rol_id) ;
-	}*/
+
 	@PostMapping("/{proyecto_id}")
+	@Secured({ "ROLE_ADMIN", "ROLE_MANAGER" , "ROLE_DEVELOPER"  })	
 	public TablerosDTO save(@Valid @RequestBody TablerosDTO t, @PathVariable(value = "proyecto_id")Long proyecto_id) {
+		cacheManager.getCache(Settings.CACHE_NAME).evict("api_proyecto_" + proyecto_id);
 		return tablerosService.addTablero( t,proyecto_id);
 	}
 }

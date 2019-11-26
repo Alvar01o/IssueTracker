@@ -4,6 +4,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,22 +30,26 @@ public class ProyectosController {
 	IGrupoService gruposService;
 
 	@GetMapping("/{id}")
+	@Secured({ "ROLE_ADMIN", "ROLE_MANAGER" , "ROLE_DEVELOPER"  })	
 	public ProyectosDTO getById(@PathVariable Long id) {
 		ProyectosDTO u= proyectoService.getById(id);
 		return proyectoService.getById(id);
 	}
 
 	@GetMapping(path = "/page/{page_num}")
+	@Secured({ "ROLE_ADMIN", "ROLE_MANAGER" , "ROLE_DEVELOPER"  })	
 	public ProyectosResultDTO getUsers(@PathVariable(value = "page_num")Integer pageNum) {
 		return proyectoService.getAll(PageRequest.of((pageNum-1),  Settings.PAGINACION));
 	}
 	
 	@GetMapping(path = "/getbygrupo/{grupo_id}/{page_num}")
+	@Secured({ "ROLE_ADMIN", "ROLE_MANAGER" , "ROLE_DEVELOPER"  })	
 	public ProyectosResultDTO getbyGrupo( @PathVariable(value = "grupo_id")Integer grupo_id, @PathVariable(value = "page_num")Integer page_num) {
 		return proyectoService.findByGrupoId(PageRequest.of((page_num-1),  Settings.PAGINACION) , grupo_id); 
 	}
 
 	@GetMapping(path = "/find/{search}/{page_num}")
+	@Secured({ "ROLE_ADMIN", "ROLE_MANAGER" , "ROLE_DEVELOPER"  })	
 	public ProyectosResultDTO findUser(@PathVariable(value = "search") String search , @PathVariable(value = "page_num")Integer pageNum) {
 		return proyectoService.findALL(PageRequest.of((pageNum-1),  Settings.PAGINACION) , search); 
 	}
@@ -54,6 +59,7 @@ public class ProyectosController {
 		return proyectoService.addUserRol(user_id,proyecto_id, rol_id) ;
 	}*/
 	@PostMapping("/{grupo_id}")
+	@Secured({ "ROLE_ADMIN", "ROLE_MANAGER" , "ROLE_DEVELOPER"  })	
 	public ProyectosDTO save(@Valid @RequestBody ProyectosDTO pro,@PathVariable(value = "grupo_id")Long grupo_id ) {
 		GruposDTO g = gruposService.getById(grupo_id);
 		pro.setGrupo(g);

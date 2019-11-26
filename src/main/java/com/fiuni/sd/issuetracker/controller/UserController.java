@@ -1,10 +1,15 @@
 package com.fiuni.sd.issuetracker.controller;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.NoSuchElementException;
 
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +33,7 @@ public class UserController {
 
 	@Autowired
 	IUserService userService;
-	
+	@Secured({ "ROLE_ADMIN" })
 	@DeleteMapping("/{id}")
 	public MessageDTO deleteById(@PathVariable Long id) {
 		try	{
@@ -40,38 +45,62 @@ public class UserController {
 			return new MessageDTO("No se encontro el usuario.");			
 		}
 	}
-
+	@GetMapping(path = "/logged")
+	@Secured({ "ROLE_ADMIN", "ROLE_MANAGER" , "ROLE_DEVELOPER" })
+	public Object getLoggedUser() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		return authentication.getAuthorities();
+	}
+	
+	@Secured({ "ROLE_ADMIN", "ROLE_MANAGER" })	
 	@GetMapping("/{id}")
 	public UserDTO getById(@PathVariable Long id) {
+		UserDTO u  = new UserDTO();
 		try	{
-			UserDTO u= userService.getById(id);
-			return userService.getById(id);			
+			u = userService.getById(id);
 		} catch (NoSuchElementException e ) {
-			UserDTO empty = new UserDTO();
-			return empty;
+			logger.info("Usuario con id " + id  + " no existe");
 		}
-
+		return u;
 	}
 
 	@GetMapping(path = "/page/{page_num}")
+	@Secured({ "ROLE_ADMIN", "ROLE_MANAGER" })	
 	public UserResultDTO getUsers(@PathVariable(value = "page_num")Integer pageNum) {
 		return userService.getAll(PageRequest.of((pageNum-1), Settings.PAGINACION));
 	}
 
+
 	@GetMapping(path = "/find/{search}/{page_num}")
+	@Secured({ "ROLE_ADMIN", "ROLE_MANAGER" , "ROLE_DEVELOPER" })	
 	public UserResultDTO findUser(@PathVariable(value = "search") String search , @PathVariable(value = "page_num")Integer pageNum) {
-		logger.warn("Hey, This is a warning!");
 		return userService.findALL(PageRequest.of((pageNum-1), Settings.PAGINACION) , search); 
 	}
 	
 	@PostMapping(path = "/addroll/{user_id}/{proyecto_id}/{rol_id}")
+	@Secured({ "ROLE_ADMIN", "ROLE_MANAGER" })	
 	public UserDTO addRoll(@PathVariable(value = "user_id")int user_id,@PathVariable(value = "proyecto_id")int proyecto_id, @PathVariable(value = "rol_id") int rol_id) {
-		return userService.addUserRol(user_id,proyecto_id, rol_id) ;
+		UserDTO udto = new UserDTO();
+		try {
+			udto= userService.addUserRol(user_id,proyecto_id, rol_id);			
+		} catch(Exception ex) {
+			logger.info(ex.toString());			
+		}
+		return udto ;
 	}
 	
+	@SuppressWarnings("finally")
 	@PostMapping()
 	public UserDTO save(@Valid @RequestBody UserDTO user) {
-		return userService.save(user);
+		UserDTO  userdto = new UserDTO();
+		try	{
+			userdto = userService.save(user);
+		} catch (Exception ex) {
+			logger.info(ex.toString());
+		} finally {
+			return userdto;			
+		}
+
 	}
 	
 }

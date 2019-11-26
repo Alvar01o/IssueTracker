@@ -9,7 +9,12 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import com.fiuni.sd.issuetracker.service.base.BaseServiceImpl;
@@ -30,7 +35,7 @@ import com.fiuni.sd.issuetracker.dto.UserResultDTO;
 import com.fiuni.sd.issuetracker.dto.UserRolDTO;
 
 @Service
-public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDTO> implements IUserService {
+public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDTO> implements IUserService , UserDetailsService {
 
 	@Autowired
 	private IUserDao userDao;
@@ -42,11 +47,13 @@ public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDT
 	private IUserRolesDao user_rolesDao;
 	@Autowired 
 	private CacheManager cacheManager;
-	
+	@Autowired 	
+	private BCryptPasswordEncoder passwordEncoder;
 	
 	@Override
+	@Transactional
 	public UserDTO save(UserDTO dto) {
-		dto.setPass(DigestUtils.md5DigestAsHex(dto.getPass().getBytes()).toString()); 
+
 		final User userD = userDao.save(convertDtoToDomain(dto));
 		UserDTO us = convertDomainToDto(userD);
 		if(userD.getId() == null) {
@@ -56,7 +63,7 @@ public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDT
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+	@Transactional(propagation=Propagation.SUPPORTS)
 	@Cacheable(value = Settings.CACHE_NAME , key = "'api_user_'+ #id")
 	public UserDTO getById(Long id) {
 		return convertDomainToDto(userDao.findById(id.intValue()).get() );
@@ -154,8 +161,20 @@ public class UserServiceImp  extends BaseServiceImpl<UserDTO, User, UserResultDT
 		u.setApellido(dto.getApellido());
 		u.setCreacion(dto.getCreacion());
 		u.setEmail(dto.getEmail());
-		u.setPass(dto.getPass());
+		String pwd = dto.getPass();
+		System.out.println("ENCODIING" + pwd);
+		u.setPass(passwordEncoder.encode(pwd));
 		return u;
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		User user = this.userDao.findByEmail(username);
+		if(user == null) {
+			throw new UsernameNotFoundException("No se encontro el usuario con email" + username);
+		} else {
+			return user;			
+		}
 	}
 
 }

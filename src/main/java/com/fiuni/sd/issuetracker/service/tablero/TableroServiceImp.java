@@ -67,6 +67,10 @@ public class TableroServiceImp extends BaseServiceImpl<TablerosDTO, Tableros, Ta
 		});
 		final TablerosResultDTO tResult = new TablerosResultDTO();
 		tResult.setTableros(ts);
+		tResult.setCurrentPage(results.getNumber());
+		tResult.setLastPage(results.getTotalPages());
+		tResult.setCurrentPageTotalItems(results.getNumberOfElements());
+		tResult.setTotalItems(results.getTotalElements());		
 		return tResult;
 	}
 

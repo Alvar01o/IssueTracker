@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ import com.fiuni.sd.issuetracker.dto.GruposResultDTO;
 import com.fiuni.sd.issuetracker.dto.UserDTO;
 import com.fiuni.sd.issuetracker.dto.UserResultDTO;
 import com.fiuni.sd.issuetracker.service.base.BaseServiceImpl;
+import com.fiuni.sd.issuetracker.service.user.IUserService;
 import com.fiuni.sd.issuetracker.utils.Settings;
 @Service
 public class GrupoServiceImp extends BaseServiceImpl<GruposDTO, Grupos, GruposResultDTO> implements IGrupoService {
@@ -30,6 +32,8 @@ public class GrupoServiceImp extends BaseServiceImpl<GruposDTO, Grupos, GruposRe
 	private IGruposDao gruposDao;
 	@Autowired
 	private IUserDao userDao;
+	@Autowired
+	private IUserService userService;	
 	@Autowired 
 	private CacheManager cacheManager;
 	
@@ -45,7 +49,6 @@ public class GrupoServiceImp extends BaseServiceImpl<GruposDTO, Grupos, GruposRe
 	}
 
 	@Override
-	@Transactional(readOnly = true)
 	@Cacheable(value = Settings.CACHE_NAME , key = "'api_grupo_'+ #id")
 	public GruposDTO getById(Long id) {
 		return convertDomainToDto(gruposDao.findById(id.intValue()).get() );
@@ -124,14 +127,22 @@ public class GrupoServiceImp extends BaseServiceImpl<GruposDTO, Grupos, GruposRe
 	        	   us.setId(u.getId());
 	        	   usuarios.add(us);
 	           });
-            g.setUsers(usuarios); // set Result on this vblock
+            g.setUsers(usuarios); 
 		}
 		return g;
 	}
 
 	@Override
+	@Transactional
 	public GruposDTO addUserToGrupo(int grupo_id, int user_id) {
-		User user = userDao.findById(user_id).get();
+		User user = new User();
+		//		User user = userDao.findById(user_id).get();
+		UserDTO userdto = userService.getById(new Long(user_id));
+		user.setApellido(userdto.getApellido());
+		user.setId(userdto.getId());
+		user.setCreacion(userdto.getCreacion());
+		user.setEmail(userdto.getEmail());
+		user.setNombre(userdto.getNombre());
 		Grupos g = gruposDao.findById(grupo_id).get();
 		g.addUser(user);
 		gruposDao.save(g);

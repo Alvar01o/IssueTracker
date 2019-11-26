@@ -3,7 +3,6 @@ package com.fiuni.sd.issuetracker.utils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
-
 @PropertySource("classpath:fiuni.properties")
 public class Settings {
 	public static final Integer PAGINACION = 30;
