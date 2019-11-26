@@ -13,4 +13,5 @@ import com.fiuni.sd.issuetracker.service.base.IBaseService;
 public interface IProyectosService extends IBaseService<ProyectosDTO, Proyectos, ProyectosResultDTO>{
 	public ProyectosResultDTO findALL(Pageable pageable ,String search);
 	public ProyectosResultDTO findByGrupoId(PageRequest pageable, Integer grupo_id);
+
 }

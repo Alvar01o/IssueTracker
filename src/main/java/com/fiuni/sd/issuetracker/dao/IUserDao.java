@@ -13,5 +13,5 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 public interface IUserDao extends PagingAndSortingRepository<User, Integer>  {
 	public Page<User> findAll(Pageable pageable);
 	public Page<User> findByNombreIgnoreCaseOrApellidoIgnoreCaseOrEmailIgnoreCase(String search1, String search2, String search3, Pageable pageable);
-	
+	public User findByEmail(String search1);
 }

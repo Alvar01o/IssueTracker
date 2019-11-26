@@ -24,6 +24,7 @@ import com.fiuni.sd.issuetracker.dto.GruposDTO;
 import com.fiuni.sd.issuetracker.dto.ProyectosDTO;
 import com.fiuni.sd.issuetracker.dto.ProyectosResultDTO;
 import com.fiuni.sd.issuetracker.dto.TablerosDTO;
+import com.fiuni.sd.issuetracker.dto.TareasDTO;
 import com.fiuni.sd.issuetracker.dto.UserDTO;
 import com.fiuni.sd.issuetracker.service.base.BaseServiceImpl;
 import com.fiuni.sd.issuetracker.utils.Settings;
@@ -38,7 +39,10 @@ public class ProyectosServiceImp extends BaseServiceImpl<ProyectosDTO, Proyectos
 	private CacheManager cacheManager;
 	@Autowired
 	private ITablerosDao tablerosDao;
+
+	
 	@Override
+	@Transactional
 	public ProyectosDTO save(ProyectosDTO dto) {
 		final Proyectos t = convertDtoToDomain(dto);
 		final Proyectos td = proyectosDao.save(t);
@@ -51,7 +55,7 @@ public class ProyectosServiceImp extends BaseServiceImpl<ProyectosDTO, Proyectos
 
 	@Override
 	@Transactional(readOnly = true)
-	@Cacheable(value = Settings.CACHE_NAME , key = "'api_proyecto_'+ #id")
+//	@Cacheable(value = Settings.CACHE_NAME , key = "'api_proyecto_'+ #id")
 	public ProyectosDTO getById(Long id) {
 		System.out.println(id);
 		return convertDomainToDto(proyectosDao.findById(id.intValue()).get() );
@@ -62,7 +66,12 @@ public class ProyectosServiceImp extends BaseServiceImpl<ProyectosDTO, Proyectos
 	public ProyectosResultDTO getAll(Pageable pageable) {
 		final List<ProyectosDTO> ts = new ArrayList<>();
 		Page<Proyectos> results=proyectosDao.findAll(pageable);
-		results.forEach(us->ts.add(convertDomainToDto(us)));
+		results.forEach((us) -> {
+				ProyectosDTO pdto = convertDomainToDto(us);
+				ts.add(pdto);
+				cacheManager.getCache(Settings.CACHE_NAME).put("api_proyecto_"+us.getId()  , pdto );
+		});
+
 		final ProyectosResultDTO tResult = new ProyectosResultDTO();
 		tResult.setProyectos(ts);
 		return tResult;
@@ -76,7 +85,6 @@ public class ProyectosServiceImp extends BaseServiceImpl<ProyectosDTO, Proyectos
 		results.forEach((us)->{
 			ProyectosDTO pdto = convertDomainToDto(us);
 			tablrs.add(pdto);
-			cacheManager.getCache(Settings.CACHE_NAME).put("api_proyecto_"+us.getId()  , pdto );			
 		});
 		final ProyectosResultDTO tResult = new ProyectosResultDTO();
 		tResult.setProyectos(tablrs);
@@ -103,7 +111,20 @@ public class ProyectosServiceImp extends BaseServiceImpl<ProyectosDTO, Proyectos
 	        	   TablerosDTO us = new TablerosDTO();
 	        	   us.setNombre(u.getNombre());
 	        	   us.setDescripcion(u.getDescripcion());
+	        	   Set<TareasDTO> tareas = new HashSet<TareasDTO>();	        	   
+	        	   u.getTareas().forEach((tarea) -> {
+	        		   TareasDTO t = new TareasDTO();
+	        		   t.setCreacion(tarea.getCreacion());
+	        		   t.setDescripcion(tarea.getDescripcion());
+	        		   t.setEstado(tarea.getEstado());
+	        		   t.setId(tarea.getId());
+	        		   t.setLimite(tarea.getlimite());
+	        		   t.setNombre(tarea.getNombre());
+	        		   t.setPrioridad(tarea.getPrioridad());
+	        		   tareas.add(t);
+	        	   });
 	        	   us.setId(u.getId());
+	        	   us.setTareas(tareas);
 	        	   tableros.add(us);
 	           });
 	           if(!tableros.isEmpty()) {
@@ -140,6 +161,4 @@ public class ProyectosServiceImp extends BaseServiceImpl<ProyectosDTO, Proyectos
 		tResult.setProyectos(tablrs);
 		return tResult;
 	}
-
-
 }

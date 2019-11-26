@@ -1,10 +1,13 @@
 package com.fiuni.sd.issuetracker.domain;
 
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,6 +17,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.transaction.Transactional;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -21,11 +25,15 @@ import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fiuni.sd.issuetracker.dto.RolDTO;
 
 @Entity
-public class User extends BaseDomain{
+@Transactional
+public class User extends BaseDomain implements UserDetails{
 
 	private static final long serialVersionUID = 1L;
 
@@ -38,7 +46,7 @@ public class User extends BaseDomain{
 	private String nombre;
 	@Column
 	private String apellido;
-	@Column
+	@Column(unique = true)
 	private String email;
 	@Basic(optional = false)
 	@CreationTimestamp
@@ -48,7 +56,8 @@ public class User extends BaseDomain{
 	@Column
 	private String pass;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER  , cascade = CascadeType.ALL )
+    
     private Set<UserRoles> user_roles;
 	
     public void addRol(UserRoles r) {
@@ -107,7 +116,7 @@ public class User extends BaseDomain{
 		this.pass = pass;
 	}
 	
-	public String getPass(String pass) {
+	public String getPass() {
 		return this.pass;
 	}
 
@@ -116,6 +125,41 @@ public class User extends BaseDomain{
 	public String toString() {
 		return "User [id=" + id + ", firstName=" + nombre + ", lastName=" + apellido + ", email=" + email
 				+ ", username=" + email + ", password=" + pass + ", user_roles=" + user_roles + "]";
+	}
+	/*USERDETAIL IMPLMENTATION*/
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return this.getUserRoles().stream().map(role -> new  SimpleGrantedAuthority( role.getRol().getName())).collect(Collectors.toList());
+	}
+
+	@Override
+	public String getPassword() {
+		return this.getPass();
+	}
+
+	@Override
+	public String getUsername() {
+		return this.getEmail();
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true;
 	}
 	
 }

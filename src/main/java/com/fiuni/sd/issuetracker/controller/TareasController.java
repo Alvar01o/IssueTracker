@@ -3,7 +3,9 @@ package com.fiuni.sd.issuetracker.controller;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +24,7 @@ public class TareasController {
 	ITareasService tareasService;
 
 	@GetMapping("/{id}")
+	@Secured({ "ROLE_ADMIN", "ROLE_MANAGER" , "ROLE_DEVELOPER"  })	
 	public TareasDTO getById(@PathVariable Long id) {
 		System.out.println(id);
 		TareasDTO u= tareasService.getById(id);
@@ -29,11 +32,13 @@ public class TareasController {
 	}
 
 	@GetMapping(path = "/page/{page_num}")
+	@Secured({ "ROLE_ADMIN", "ROLE_MANAGER" , "ROLE_DEVELOPER"  })	
 	public TareasResultDTO getUsers(@PathVariable(value = "page_num")Integer pageNum) {
 		return tareasService.getAll(PageRequest.of((pageNum-1), Settings.PAGINACION));
 	}
 
 	@GetMapping(path = "/find/{search}/{page_num}")
+	@Secured({ "ROLE_ADMIN", "ROLE_MANAGER" , "ROLE_DEVELOPER"  })	
 	public TareasResultDTO findTarea(@PathVariable(value = "search") String search , @PathVariable(value = "page_num")Integer pageNum) {
 		return tareasService.findALL(PageRequest.of((pageNum-1), Settings.PAGINACION) , search); 
 	}
@@ -43,6 +48,7 @@ public class TareasController {
 		return grupoService.addUserRol(user_id,proyecto_id, rol_id) ;
 	}*/
 	@PostMapping("/addtareatablero/{tablero_id}")
+	@Secured({ "ROLE_ADMIN", "ROLE_MANAGER" , "ROLE_DEVELOPER"  })	
 	public TareasDTO save(@Valid @RequestBody TareasDTO t, @PathVariable(value = "tablero_id")Long tablero_id) {
 		return tareasService.addTareaATablero(t, tablero_id) ;
 	}
